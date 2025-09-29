@@ -5,7 +5,7 @@
 | | version |
 | ---- | ---- |
 | Unity | Unity 6.0 (6000.0.58f1) |
-| Unity Hub | Hub V3.12.1 |
+| Unity Hub | Hub 3.1.4.2|
 
 ## 事前準備(仮)
 
