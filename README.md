@@ -5,7 +5,7 @@
 | | version |
 | ---- | ---- |
 | Unity | Unity 6.0 (6000.0.58f1) |
-| Unity Hub | Hub 3.1.4.2|
+| Unity Hub | Hub V3.1.4.2|
 
 ## 事前準備(仮)
 
@@ -13,9 +13,9 @@
 
 2. 2Dプロジェクトを作成
 
-3. dangoro.zipをダウンロード
+3. sugoroku.zipをダウンロード
 
-4. 2で作ったプロジェクトのフォルダに展開したdangoro.zipをコピー
+4. sugoroku.zipを展開して、2で作ったプロジェクトのフォルダにコピー
     (Assets、Packages、ProjectSettingsの3つのフォルダをコピー)
 
 5. Unityで動作確認
@@ -24,24 +24,51 @@
 
 | スクリブト名 | 概要 |
 | ---- | ---- |
-| camraController.cs | ダンゴローの動きを制御するスクリプト |
-| DangomushiController.cs | ダンゴローの動きを制御するスクリプト |
-| GameDirector.cs | 主にゲーム状態を監視し, UIを制御するスクリプト |
-| GameState.cs | enumでゲーム状態を定義したもの. intやstringなどでゲーム状態を管理すると分かりづらいのでこれを利用 |
-| GenerateLine.cs | プレイヤーによる線の描画を制御するスクリプト |
-| GoalDetection.cs | ゴール判定のスクリプト |
+| 修正中 | 修正中 |
 
 ## GitHubの使い方
 
-〇プルリクエストの動作確認
-git fetch origin pull/{①プルリクエストのID}/head:{②作るブランチの名前}
+本章では開発作業の流れについて説明します。
 
-①プルリクエストのID
+### Issue を確認する
 
-    プルリクエストの場所に移動　例.feature/#68#80　左の例では80がID（薄く表示されている番号）
- 
-②作るブランチの名前
+Issue を確認します。
 
-    適当に決める　例.test#68
+このとき、 Project のステータスが`ToDo`になっている Issue が未着手の Issue です。
+ただし、他の開発者が assign されている場合はその人が処理する予定であると考えられるため、本人に確認しましょう。
 
-具体例　git fetch origin pull/80/head:test#68
+### Issue のステータスを変更する
+
+処理する Issue が決まったら、そのステータスを`In Progress`にします。
+Projects のカンバン画面で Issue をドラッグ & ドロップするか、 Issue 画面でステータスをクリックして変更してください。
+
+また、 Issue を自分自身に assign してください。
+
+### 作業する
+
+`feature`ブランチを切り、作業を行います。
+
+`feature`ブランチは`develop`ブランチから派生させます。
+派生させる時には必ず`develop`ブランチを最新の状態に更新してください。
+また、`feature`ブランチの名前は`feature/[Issue 番号]`としてください。
+
+```
+$ git switch develop
+$ git pull
+$ git switch -c feature/#999
+```
+
+### Pull Request を発行する
+
+作業が完了したら、`feature`ブランチを push します。
+
+```
+$ git push -u origin feature/#999
+```
+
+`feature`ブランチを push した後、`develop`ブランチへ Pull Request を発行します。
+
+Pull Request を発行する際は [Closing Keyword](https://docs.github.com/ja/issues/tracking-your-work-with-issues/linking-a-pull-request-to-an-issue) で Issue を関連付けてください。
+例：`close #999`
+
+また、 review request も行い、指摘事項があれば対応してください。
