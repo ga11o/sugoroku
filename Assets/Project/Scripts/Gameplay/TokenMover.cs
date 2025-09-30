@@ -81,4 +81,12 @@ public class TokenMover : MonoBehaviour
         }
         transform.position = end;
     }
+
+        // UI から「nマス進める」を呼べるようにする
+    public bool MoveBy(int steps)
+    {
+        if (board == null || isMoving) return false;
+        StartCoroutine(MoveSteps(steps));
+        return true;
+    }
 }
