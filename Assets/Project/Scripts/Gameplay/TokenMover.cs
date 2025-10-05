@@ -93,4 +93,34 @@ public class TokenMover : MonoBehaviour
         StartCoroutine(MoveSteps(steps));
         return true;
     }
+
+    // ★ 追加：符号付きで進む（-1 で1マス戻る）
+    public bool MoveBySigned(int steps)
+    {
+        if (board == null || isMoving || steps == 0) return false;
+        StartCoroutine(MoveStepsSigned(steps));
+        return true;
+    }
+
+    IEnumerator MoveStepsSigned(int steps)
+    {
+        isMoving = true;
+
+        int dir = (steps > 0) ? 1 : -1;
+        int remain = Mathf.Abs(steps);
+        int lastIndex = board.Count - 1;
+
+        while (remain > 0)
+        {
+            int next = Mathf.Clamp(currentIndex + dir, 0, lastIndex);
+            if (next == currentIndex) break;      // 端に到達
+
+            yield return MoveToIndex(next);
+            currentIndex = next;
+            remain--;
+        }
+
+        isMoving = false;
+        MoveCompleted?.Invoke(); // ステートマシンへ通知（必要なら）
+    }
 }

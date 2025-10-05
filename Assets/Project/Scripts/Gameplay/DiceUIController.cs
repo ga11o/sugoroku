@@ -20,6 +20,10 @@ public class DiceUIController : MonoBehaviour
     [Header("ステートマシン")]
     public GameStateMachine gsm;  // ← ステート管理と連携
 
+    [Header("デバッグ")]
+    public bool debugUseFixed = false;
+    [Range(1,6)] public int debugFixedValue = 6;
+
     void Awake()
     {
         if (token == null) token = FindObjectOfType<TokenMover>();
@@ -71,10 +75,12 @@ public class DiceUIController : MonoBehaviour
         }
 
         // 最終出目
-        int final = Random.Range(1, 7);
+        // 最終出目を決定（ここだけ置換）
+        int final = debugUseFixed ? Mathf.Clamp(debugFixedValue, 1, 6)
+                                : Random.Range(1, 7);
         if (diceText) diceText.text = final.ToString();
 
-        // ★ ステートマシンへ通知して移動開始
+        // ★ ステートマシン経由（導入済みであれば）
         bool accepted = gsm ? gsm.OnDiceFinal(final)
                             : (token != null && token.MoveBy(final));
         if (!accepted) { rolling = false; yield break; }
