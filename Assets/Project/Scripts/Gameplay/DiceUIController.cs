@@ -6,7 +6,7 @@ using TMPro;
 public class DiceUIController : MonoBehaviour
 {
     [Header("参照")]
-    public TokenMover token;      // 駒
+    public TokenMover token;      // 駒（保険として保持。無くてもOK）
     public Button rollButton;     // サイコロボタン
     public TMP_Text diceText;     // 出目表示（TMP推奨）
     public AudioSource sfxRoll;   // 任意（サイコロ音）
@@ -17,33 +17,44 @@ public class DiceUIController : MonoBehaviour
 
     bool rolling;
 
+    [Header("ステートマシン")]
+    public GameStateMachine gsm;  // ← ステート管理と連携
+
     void Awake()
     {
         if (token == null) token = FindObjectOfType<TokenMover>();
-        rollButton.onClick.AddListener(OnClickRoll);
+        if (gsm   == null) gsm   = FindObjectOfType<GameStateMachine>();
+
+        if (rollButton != null)
+            rollButton.onClick.AddListener(OnClickRoll);
+
         if (diceText != null) diceText.text = "—"; // 初期表示
     }
 
-    // DiceUIController.cs の Update を安全版に
     void Update()
     {
         if (rollButton == null) return;
-        bool tokenMoving = (token != null && token.isMoving);
-        rollButton.interactable = !rolling && !tokenMoving; // これで常に意図通りの状態に
+
+        // 自分のターン＆移動中でない時だけ押せる
+        bool canRoll = gsm ? gsm.CanRoll() : (token != null && !token.isMoving);
+        rollButton.interactable = !rolling && canRoll;
     }
 
-
+    // Button の OnClick からも割り当て可能に public に
     public void OnClickRoll()
     {
-        if (rolling || token == null || token.isMoving) return;
+        // 押してよい状態かを最終確認（ステートマシン基準）
+        if (rolling) return;
+        if (gsm != null && !gsm.CanRoll()) return;
+        if (gsm == null && (token == null || token.isMoving)) return;
+
         StartCoroutine(RollRoutine());
     }
-
 
     IEnumerator RollRoutine()
     {
         rolling = true;
-        rollButton.interactable = false;
+        if (rollButton) rollButton.interactable = false;
 
         if (sfxRoll) sfxRoll.Play();
 
@@ -59,18 +70,19 @@ public class DiceUIController : MonoBehaviour
             yield return new WaitForSecondsRealtime(rollAnimInterval);
         }
 
-        // 最終出目を決定
+        // 最終出目
         int final = Random.Range(1, 7);
         if (diceText) diceText.text = final.ToString();
 
-        // 進める（戻り値で弾かれたらUIだけ元に戻す）
-        bool accepted = token.MoveBy(final);
+        // ★ ステートマシンへ通知して移動開始
+        bool accepted = gsm ? gsm.OnDiceFinal(final)
+                            : (token != null && token.MoveBy(final));
         if (!accepted) { rolling = false; yield break; }
 
-        // 駒の移動が終わるまで待つ
-        while (token.isMoving) yield return null;
+        // 駒の移動終了を待つ（token は必須で保持しておく）
+        while (token != null && token.isMoving) yield return null;
 
         rolling = false;
-        rollButton.interactable = true;
+        if (rollButton) rollButton.interactable = true;
     }
 }

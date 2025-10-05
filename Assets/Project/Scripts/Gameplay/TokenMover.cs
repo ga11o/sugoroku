@@ -16,6 +16,8 @@ public class TokenMover : MonoBehaviour
     public int currentIndex = 0;
     public bool isMoving = false;
 
+    public event System.Action MoveCompleted; // 移動完了イベント
+
     void Start()
     {
         if (board != null && board.Count > 0)
@@ -24,12 +26,12 @@ public class TokenMover : MonoBehaviour
 
     void Update()
     {
-#if ENABLE_INPUT_SYSTEM
-        bool space = UnityEngine.InputSystem.Keyboard.current != null &&
-                     UnityEngine.InputSystem.Keyboard.current.spaceKey.wasPressedThisFrame;
-#else
-        bool space = Input.GetKeyDown(KeyCode.Space);
-#endif
+        #if ENABLE_INPUT_SYSTEM
+                bool space = UnityEngine.InputSystem.Keyboard.current != null &&
+                            UnityEngine.InputSystem.Keyboard.current.spaceKey.wasPressedThisFrame;
+        #else
+                bool space = Input.GetKeyDown(KeyCode.Space);
+        #endif
         if (space) RollAndMove();
     }
 
@@ -63,6 +65,8 @@ public class TokenMover : MonoBehaviour
         // ★ ゴール到達で終了画面
         if (currentIndex >= board.Count - 1 && endScreen != null)
             endScreen.Show("ゴール！", "おめでとう 🎉");
+        // その直後にイベント通知
+        MoveCompleted?.Invoke();
     }
 
     IEnumerator MoveToIndex(int targetIndex)
