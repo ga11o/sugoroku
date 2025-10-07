@@ -64,7 +64,7 @@ public class TokenMover : MonoBehaviour
 
         // ★ ゴール到達で終了画面
         if (currentIndex >= board.Count - 1 && endScreen != null)
-            endScreen.Show("ゴール！", "おめでとう 🎉");
+            endScreen.Show("Goal", "Congratulations!");
         // その直後にイベント通知
         MoveCompleted?.Invoke();
     }
