@@ -16,7 +16,28 @@ public class TokenMover : MonoBehaviour
     public int currentIndex = 0;
     public bool isMoving = false;
 
-    public event System.Action MoveCompleted; // 移動完了イベント
+    public event System.Action MoveCompleted; // 移動完了イベント    
+
+    [Header("移動アニメーション")]
+    public bool animationJump = true;      // 移動中に上下の浮きを付与
+    public float jumpHeight = 1.5f;     // 浮きの最大高さ（ワールド単位）
+    public float jumpFrequency = 0f;     // 浮き中の細かな揺れ回数（0でなし）
+
+    // 正規化進捗(0..1)に応じた上下オフセット（開始/終了は0＝着地）
+    private Vector3 GetJumpOffset(float normalizedProgress)
+    {
+        if (!animationJump || jumpHeight <= 0f) return Vector3.zero;
+
+        float u = Mathf.Clamp01(normalizedProgress);
+        // 山型エンベロープ（0→1→0）で必ず着地させる
+        float envelope = Mathf.Sin(Mathf.PI * u);
+        // お好みで細かな揺れ（常に正値、端で0）
+        float wobble = (jumpFrequency > 0f)
+            ? 0.5f * (1f - Mathf.Cos(2f * Mathf.PI * jumpFrequency * u))
+            : 1f;
+        float lift = jumpHeight * envelope * wobble;
+        return Vector3.up * lift;
+    }
 
     void Start()
     {
@@ -80,7 +101,8 @@ public class TokenMover : MonoBehaviour
         {
             t += Time.deltaTime / duration;
             float u = Mathf.SmoothStep(0f, 1f, t);
-            transform.position = Vector3.Lerp(start, end, u);
+            Vector3 basePos = Vector3.Lerp(start, end, u);  
+            transform.position = basePos + GetJumpOffset(u);    //移動中ジャンプするアニメーションを追加
             yield return null;
         }
         transform.position = end;
