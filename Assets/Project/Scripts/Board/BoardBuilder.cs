@@ -106,8 +106,6 @@ public class BoardBuilder : MonoBehaviour
             Vector3 pos = new Vector3( (g.x + g.y) * path.tileSpacing,(g.y - g.x) * path.tileSpacing * 0.5f,0f);
 
 
-
-
             GameObject prefab =
                 (i == 0) ? tileStartPrefab :
                 (i == path.coords.Count - 1) ? tileGoalPrefab :
