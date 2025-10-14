@@ -23,6 +23,9 @@ public class TokenMover : MonoBehaviour
     public float jumpHeight = 1.5f;     // 浮きの最大高さ（ワールド単位）
     public float jumpFrequency = 0f;     // 浮き中の細かな揺れ回数（0でなし）
 
+    [Header("Tokenの位置調整")]
+    public Vector3 tokenOffset = new Vector3(0f, 1f, 0f); // Tokenの中心がタイル中央に来るようにするオフセット
+
     // 正規化進捗(0..1)に応じた上下オフセット（開始/終了は0＝着地）
     private Vector3 GetJumpOffset(float normalizedProgress)
     {
@@ -42,7 +45,7 @@ public class TokenMover : MonoBehaviour
     void Start()
     {
         if (board != null && board.Count > 0)
-            transform.position = board.GetPoint(currentIndex);
+            transform.position = board.GetPoint(currentIndex) + tokenOffset; //初期位置をtokenOffset分ずらす
     }
 
     void Update()
@@ -93,7 +96,7 @@ public class TokenMover : MonoBehaviour
     IEnumerator MoveToIndex(int targetIndex)
     {
         Vector3 start = transform.position;
-        Vector3 end = board.GetPoint(targetIndex);
+        Vector3 end = board.GetPoint(targetIndex) + tokenOffset; //移動先もtokenOffset分ずらす
         float t = 0f;
         float duration = Mathf.Max(0.01f, secondsPerTile);
 
