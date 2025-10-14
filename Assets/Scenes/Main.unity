@@ -1334,6 +1334,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 1929790683112998193, guid: b786ef7bc46531a49a53ad1ed522a266, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1929790683112998193, guid: b786ef7bc46531a49a53ad1ed522a266, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
@@ -1712,6 +1716,9 @@ MonoBehaviour:
   sfxRoll: {fileID: 2086131898}
   rollAnimDuration: 0.2
   rollAnimInterval: 0.03
+  gsm: {fileID: 0}
+  debugUseFixed: 0
+  debugFixedValue: 6
 --- !u!1 &1952301672
 GameObject:
   m_ObjectHideFlags: 0

@@ -102,7 +102,10 @@ public class BoardBuilder : MonoBehaviour
         {
             var g = path.coords[i];
             // 置き換え：常に 0.5 を使う
-            Vector3 pos = new Vector3(g.x * 5f + g.y * 5f, g.y * 2.5f - g.x * 2.5f, 0f);
+            //Vector3 pos = new Vector3(g.x * 5f + g.y * 5f, g.y * 2.5f - g.x * 2.5f, 0f);
+            Vector3 pos = new Vector3( (g.x + g.y) * path.tileSpacing,(g.y - g.x) * path.tileSpacing * 0.5f,0f);
+
+
 
 
             GameObject prefab =
