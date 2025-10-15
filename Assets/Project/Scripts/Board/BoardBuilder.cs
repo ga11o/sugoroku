@@ -130,6 +130,34 @@ public class BoardBuilder : MonoBehaviour
         index = Mathf.Clamp(index, 0, waypoints.Count - 1);
         return waypoints[index].position;
     }
+        // 例外処理 エラー検知
+    void ErrorHandling()
+    {
+        try
+        {
+            if (path == null || path.coords == null || path.coords.Count == 0)
+            {
+                Debug.LogWarning($"{nameof(BoardBuilder)}: Path が未設定または空です。生成を中止します。", this);
+                return;
+            }
+            if (tileNormalPrefab == null || tileStartPrefab == null || tileGoalPrefab == null)
+            {
+                Debug.LogWarning($"{nameof(BoardBuilder)}: タイルPrefabのいずれかが未設定です。生成を中止します。", this);
+                return;
+            }
+
+            var root = EnsureTilesRoot();
+            if (root == null)
+            {
+                Debug.LogError($"{nameof(BoardBuilder)}: tilesRoot の用意に失敗しました。", this);
+                return;
+            }
+        }
+        catch (System.Exception ex) 
+        {
+            Debug.LogError($"Error: {ex.Message}");
+        }
+    }
 
     public int Count => waypoints.Count;
 }
