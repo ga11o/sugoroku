@@ -31,6 +31,12 @@ public class CameraFollow2D : MonoBehaviour
     void Awake()
     {
         cam = GetComponent<Camera>();
+        
+        // エラーチェック
+        if (cam == null)
+        {
+            Debug.LogError($"{nameof(CameraFollow2D)}: Camera コンポーネントが見つかりません。追従を無効化します。", this);
+        }
 
         // 自動解決（設定が空でも動く）
         if (target == null)
@@ -44,7 +50,8 @@ public class CameraFollow2D : MonoBehaviour
     }
 
     void LateUpdate()
-    {
+    {   
+        if (cam == null) return;
         if (target == null) return;
 
         // 目標位置
@@ -70,6 +77,13 @@ public class CameraFollow2D : MonoBehaviour
             Bounds b = GetBoardBounds(board);
             Vector2 ext = GetCameraHalfExtents(cam);
 
+            // ext.x, ext.y が NaN になる場合のチェック
+            if (!Mathf.Approximately(ext.x, ext.x) || !Mathf.Approximately(ext.y, ext.y))
+            {
+                Debug.LogWarning("ext.x or ext.y の NaN を検知", this);
+                return; // フォールバック
+            }
+
             float minX = b.min.x - boundsPadding + ext.x;
             float maxX = b.max.x + boundsPadding - ext.x;
             float minY = b.min.y - boundsPadding + ext.y;
@@ -89,6 +103,13 @@ public class CameraFollow2D : MonoBehaviour
 
     static Bounds GetBoardBounds(BoardBuilder bb)
     {
+
+        // bbが null またはポイントがない場合の対策
+        if (bb == null || bb.Count < 0)
+        {
+            Debug.LogWarning("CameraFollow2D: BoardBuilder が未設定か、ポイントがありません。", bb);
+        }
+            
         Bounds b = new Bounds(bb.GetPoint(0), Vector3.one * 0.001f);
         for (int i = 1; i < bb.Count; i++) b.Encapsulate(bb.GetPoint(i));
         return b;

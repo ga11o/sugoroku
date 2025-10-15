@@ -79,8 +79,10 @@ public class BoardBuilder : MonoBehaviour
 
     void BuildInternal(bool destroyImmediate)
     {
-        if (path == null || path.coords == null || path.coords.Count == 0) return;
-        if (tileNormalPrefab == null || tileStartPrefab == null || tileGoalPrefab == null) return;
+        if (!ErrorHandling()) return; // エラー検知
+
+        // if (path == null || path.coords == null || path.coords.Count == 0) return;
+        // if (tileNormalPrefab == null || tileStartPrefab == null || tileGoalPrefab == null) return;
 
         var root = EnsureTilesRoot();
 
@@ -130,32 +132,37 @@ public class BoardBuilder : MonoBehaviour
         index = Mathf.Clamp(index, 0, waypoints.Count - 1);
         return waypoints[index].position;
     }
-        // 例外処理 エラー検知
-    void ErrorHandling()
+
+    // 例外処理 エラー検知
+    private bool ErrorHandling()
     {
         try
         {
+            bool ok = true;
+
             if (path == null || path.coords == null || path.coords.Count == 0)
             {
                 Debug.LogWarning($"{nameof(BoardBuilder)}: Path が未設定または空です。生成を中止します。", this);
-                return;
+                ok = false;
             }
             if (tileNormalPrefab == null || tileStartPrefab == null || tileGoalPrefab == null)
             {
                 Debug.LogWarning($"{nameof(BoardBuilder)}: タイルPrefabのいずれかが未設定です。生成を中止します。", this);
-                return;
+                ok = false;
             }
-
             var root = EnsureTilesRoot();
             if (root == null)
             {
                 Debug.LogError($"{nameof(BoardBuilder)}: tilesRoot の用意に失敗しました。", this);
-                return;
+                ok = false;
             }
+            
+            return ok;
         }
-        catch (System.Exception ex) 
+        catch (System.Exception ex)
         {
-            Debug.LogError($"Error: {ex.Message}");
+            Debug.LogException(ex, this);
+            return false;
         }
     }
 

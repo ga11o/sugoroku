@@ -36,17 +36,27 @@ public class EndScreenController : MonoBehaviour
     IEnumerator FadeIn()
     {
         if (group == null) yield break;
-        float t = 0f;
-        group.blocksRaycasts = true;
 
-        while (t < fadeDuration)
+        // フェード時間が 0 以下なら即座に最終状態へ
+        if (fadeDuration <= 0f)
         {
-            t += Time.unscaledDeltaTime;              // ポーズしても動く
-            group.alpha = Mathf.Lerp(0f, 1f, t / fadeDuration);
-            yield return null;
+            group.alpha = 1f;
+            group.interactable = true;
+            group.blocksRaycasts = true;
+            yield break;
         }
-        group.alpha = 1f;
-        group.interactable = true;
+
+            float t = 0f;
+            group.blocksRaycasts = true;
+
+            while (t < fadeDuration)
+            {
+                t += Time.unscaledDeltaTime;              // ポーズしても動く
+                group.alpha = Mathf.Lerp(0f, 1f, t / fadeDuration);
+                yield return null;
+            }
+            group.alpha = 1f;
+            group.interactable = true;
     }
 
     public void Hide()
