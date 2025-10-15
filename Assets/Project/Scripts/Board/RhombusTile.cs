@@ -9,7 +9,7 @@ public class RhombusTile : MonoBehaviour
     public float diagonalY = 0.5f; // 縦の対角線（2:1なら 0.5）
 
     [Header("見た目")]
-    public Color color = new Color(0.68f, 0.93f, 0.62f); // 薄緑
+    public Color color = new Color(0.7415f, 1.0f, 0.6549f); // 薄緑
     public string sortingLayerName = "Default";
     public int sortingOrder = 0;
 
@@ -56,5 +56,25 @@ public class RhombusTile : MonoBehaviour
         mesh.uv = uv;
         mesh.RecalculateBounds();
         mesh.RecalculateNormals();
+    }
+
+    public void ApplyColor(TileEvent tile)
+    {
+        Color col = this.color;
+        if (tile != null)
+        {
+            switch (tile.eventType)
+            {
+                case TileEvent.EventType.None:      col = this.color;   break;
+                case TileEvent.EventType.Forward:   col = new Color(0.4235f, 0.8078f, 1.0f);   break;
+                case TileEvent.EventType.Back:      col = new Color(1.0f, 0.5686f, 0.5686f);   break;
+                case TileEvent.EventType.ExtraTurn: col = new Color(1.0f, 0.8824f, 0.4196f);   break;
+                case TileEvent.EventType.SkipNext:  col = new Color(0.784f, 0.784f, 0.784f);   break;
+                case TileEvent.EventType.GoToStart: col = new Color(0.941f, 0.498f, 0.941f);   break;
+                default:                            col = this.color;   break;
+            }
+        }
+        this.color = col;
+        GetComponent<MeshRenderer>().material.color = col;
     }
 }

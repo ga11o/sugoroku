@@ -15,6 +15,7 @@ public class TokenMover : MonoBehaviour
     [Header("状態")]
     public int currentIndex = 0;
     public bool isMoving = false;
+    private bool eventResolving = false; // ★ 追加：イベント処理中フラグ
 
     public event System.Action MoveCompleted; // 移動完了イベント
 
@@ -65,8 +66,9 @@ public class TokenMover : MonoBehaviour
         // ★ ゴール到達で終了画面
         if (currentIndex >= board.Count - 1 && endScreen != null)
             endScreen.Show("ゴール！", "おめでとう 🎉");
+        
         // その直後にイベント通知
-        MoveCompleted?.Invoke();
+        if (!eventResolving) MoveCompleted?.Invoke();
     }
 
     IEnumerator MoveToIndex(int targetIndex)
@@ -121,6 +123,22 @@ public class TokenMover : MonoBehaviour
         }
 
         isMoving = false;
-        MoveCompleted?.Invoke(); // ステートマシンへ通知（必要なら）
+        if(!eventResolving) MoveCompleted?.Invoke(); // ステートマシンへ通知（必要なら）
+    }
+
+    // ★ 追加：イベント処理用のコルーチン
+    public IEnumerator MoveStepsEvent(int steps)
+    {
+        eventResolving = true; // ★ イベント処理中フラグを立てる
+        yield return MoveSteps(steps);
+        eventResolving = false; // ★ フラグを下ろす
+    }
+
+    // ★ 追加：イベント処理用の符号付きコルーチン
+    public IEnumerator MoveStepsSignedEvent(int steps)
+    {
+        eventResolving = true; // ★ イベント処理中フラグを立てる
+        yield return MoveStepsSigned(steps);
+        eventResolving = false; // ★ フラグを下ろす
     }
 }
