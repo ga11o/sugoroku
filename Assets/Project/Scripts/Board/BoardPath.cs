@@ -16,4 +16,22 @@ public class BoardPath : ScriptableObject
         new Vector2Int(10,0), new Vector2Int(11,0), new Vector2Int(12,0), new Vector2Int(13,0), new Vector2Int(14,0),
         new Vector2Int(15,0), new Vector2Int(16,0), new Vector2Int(17,0), new Vector2Int(18,0), new Vector2Int(19,0)
     };
+
+    [Tooltip("各マスのイベント情報")]
+    public List<TileEvent> events = new List<TileEvent>()
+    {
+        // 適当にイベントを並べて、マス数より少ない場合はループされる
+        new TileEvent(TileEvent.EventType.None),
+        new TileEvent(TileEvent.EventType.Forward, 3),
+        new TileEvent(TileEvent.EventType.None),
+        new TileEvent(TileEvent.EventType.SkipNext),
+        new TileEvent(TileEvent.EventType.Back, 1),
+        new TileEvent(TileEvent.EventType.None),
+        new TileEvent(TileEvent.EventType.None),
+        new TileEvent(TileEvent.EventType.Forward, 3),
+        new TileEvent(TileEvent.EventType.None),
+        new TileEvent(TileEvent.EventType.ExtraTurn),
+        new TileEvent(TileEvent.EventType.None),
+        new TileEvent(TileEvent.EventType.GoToStart),
+    };
 }

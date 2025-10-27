@@ -112,6 +112,12 @@ public class BoardBuilder : MonoBehaviour
 
             var tile = Instantiate(prefab, pos, Quaternion.identity, root);
 
+            // イベント列からイベントを参照
+            var ev = path.events[(i % path.events.Count)];
+
+            var rhombus = tile.GetComponent<RhombusTile>();
+            if (i != 0 && i != path.coords.Count -1) rhombus.ApplyColor(ev);
+
             if (rotateDiamond)
             {
                 var e = tile.transform.eulerAngles;
