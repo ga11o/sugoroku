@@ -40,4 +40,21 @@ public class BoardPath : ScriptableObject
         };
     }*/
 
+    [Tooltip("各マスのイベント情報")]
+    public List<TileEvent> events = new List<TileEvent>()
+    {
+        // 適当にイベントを並べて、マス数より少ない場合はループされる
+        new TileEvent(TileEvent.EventType.None),
+        new TileEvent(TileEvent.EventType.Forward, 3),
+        new TileEvent(TileEvent.EventType.None),
+        new TileEvent(TileEvent.EventType.SkipNext),
+        new TileEvent(TileEvent.EventType.Back, 1),
+        new TileEvent(TileEvent.EventType.None),
+        new TileEvent(TileEvent.EventType.None),
+        new TileEvent(TileEvent.EventType.Forward, 3),
+        new TileEvent(TileEvent.EventType.None),
+        new TileEvent(TileEvent.EventType.ExtraTurn),
+        new TileEvent(TileEvent.EventType.None),
+        new TileEvent(TileEvent.EventType.GoToStart),
+    };
 }

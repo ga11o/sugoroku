@@ -21,6 +21,8 @@ public class GameStateMachine : MonoBehaviour
     [Header("調整")]
     public float otherTurnDelay = 0.6f;  // 他ターンのダミー待ち
     public float resolveDelay   = 0.25f; // 着地後の演出/判定の待ち
+    private bool extraTurnPending = false; // ★ 追加：もう一度サイコロを振るフラグ
+    private bool skipNextPending = false; // ★ 追加：一回休みフラグ
 
     public GameState State { get; private set; } = GameState.MyTurn_AwaitInput;
     public event Action<GameState, GameState> OnStateChanged;
@@ -65,12 +67,28 @@ public class GameStateMachine : MonoBehaviour
         SetState(GameState.MyTurn_Resolving);
         yield return new WaitForSeconds(resolveDelay);
 
-        // ここでイベントマス処理などを行う（将来）
-        // …
+        // 現在のマスのイベント処理
+        if (myToken != null && myToken.board != null)
+        {
+            yield return ExecuteTileEvent(myToken.board.path.events[(myToken.currentIndex% myToken.board.path.events.Count)]);
+            if (extraTurnPending)
+            {
+                extraTurnPending = false; // フラグをリセット
+                SetState(GameState.MyTurn_AwaitInput); // もう一度自分のターンへ
+                yield break;
+            }
+        }
 
         // 今はダミーとして「相手のターン」を少しだけ挟む
         SetState(GameState.OtherTurn);
         yield return new WaitForSeconds(otherTurnDelay);
+
+        if(skipNextPending)
+        {
+            skipNextPending = false; // フラグをリセット
+            SetState(GameState.OtherTurn);
+            yield return new WaitForSeconds(otherTurnDelay);
+        }
 
         // 自分のターンに戻す
         SetState(GameState.MyTurn_AwaitInput);
@@ -83,5 +101,38 @@ public class GameStateMachine : MonoBehaviour
         State = next;
         OnStateChanged?.Invoke(prev, next);
         // 必要ならここで UI の有効/無効を切り替える
+    }
+    
+
+    IEnumerator ExecuteTileEvent(TileEvent tile)
+    {
+        if (tile == null) yield break;
+        
+        switch (tile.eventType)
+        {
+            case TileEvent.EventType.None:
+                // 何もしない
+                break;
+            case TileEvent.EventType.Forward:
+                // 指定マス進む
+                yield return myToken.MoveStepsEvent(tile.value);
+                break;
+            case TileEvent.EventType.Back:
+                // 指定マス戻る
+                yield return myToken.MoveStepsSignedEvent(-tile.value);
+                break;
+            case TileEvent.EventType.ExtraTurn:
+                // もう一度サイコロを振れる
+                extraTurnPending = true;
+                break;
+            case TileEvent.EventType.SkipNext:
+                // 一回休み
+                skipNextPending = true;
+                break;
+            case TileEvent.EventType.GoToStart:
+                // スタートに戻る
+                yield return myToken.MoveStepsSignedEvent(-myToken.currentIndex);
+                break;
+        }
     }
 }
