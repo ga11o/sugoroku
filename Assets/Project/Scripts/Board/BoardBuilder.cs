@@ -79,6 +79,83 @@ public class BoardBuilder : MonoBehaviour
 
     void BuildInternal(bool destroyImmediate)
     {
+        if (!ErrorHandling()) return;
+
+        var root = EnsureTilesRoot();
+
+        // 既存タイル削除
+        for (int i = root.childCount - 1; i >= 0; i--)
+        {
+            var child = root.GetChild(i).gameObject;
+    #if UNITY_EDITOR
+            if (destroyImmediate) UnityEditor.Undo.DestroyObjectImmediate(child);
+            else Destroy(child);
+    #else
+            Destroy(child);
+    #endif
+        }
+        waypoints.Clear();
+
+        // グリッド走査
+        int rows = path.grid.GetLength(0);
+        int cols = path.grid.GetLength(1);
+
+
+
+        for (int y = 0; y < rows; y++)
+        {
+            for (int x = 0; x < cols; x++)
+            {
+                int cell = path.grid[y, x];
+                if (cell == 0) continue; // 空白はスキップ
+
+                //Vector3 pos = new Vector3(x * path.tileSpacing, -y * path.tileSpacing, 0f);
+                Vector3 pos = new Vector3((x + y) * path.tileSpacing,(y - x) * path.tileSpacing * 0.5f,0f);
+
+                GameObject prefab =
+                    (cell == 2) ? tileStartPrefab :
+                    (cell == 3) ? tileGoalPrefab :
+                    tileNormalPrefab;
+
+
+                var tile = Instantiate(prefab, pos, Quaternion.identity, root);
+
+                TileEvent ev = null;
+                switch (cell)
+                {
+                    case 10: ev = new TileEvent(TileEvent.EventType.Forward, 3); break;
+                    case 11: ev = new TileEvent(TileEvent.EventType.Back, 1); break;
+                    case 12: ev = new TileEvent(TileEvent.EventType.SkipNext); break;
+                    case 13: ev = new TileEvent(TileEvent.EventType.ExtraTurn); break;
+                    case 14: ev = new TileEvent(TileEvent.EventType.GoToStart); break;
+                }
+
+                if (ev != null)
+                {
+                    var rhombus = tile.GetComponent<RhombusTile>();
+                    if (rhombus != null) rhombus.ApplyColor(ev);
+
+                    // Waypoint にイベントを保持させる
+                    var wp = new GameObject($"WP_{x}_{y}").AddComponent<Waypoint>();
+                    wp.tileEvent = ev;
+                    wp.transform.SetParent(tile.transform, false);
+                    waypoints.Add(wp.transform);
+                }
+                else
+                {
+                    var wp = new GameObject($"WP_{x}_{y}").transform;
+                    wp.SetParent(tile.transform, false);
+                    waypoints.Add(wp);
+                }
+
+            }
+        }
+
+
+    }
+
+    /*void BuildInternal(bool destroyImmediate)
+    {
         if (!ErrorHandling()) return; // エラー検知
 
         // if (path == null || path.coords == null || path.coords.Count == 0) return;
@@ -132,7 +209,7 @@ public class BoardBuilder : MonoBehaviour
             wp.SetParent(tile.transform, false);
             waypoints.Add(wp);
         }
-    }
+    }*/
 
     public Vector3 GetPoint(int index)
     {
@@ -147,7 +224,10 @@ public class BoardBuilder : MonoBehaviour
         {
             bool ok = true;
 
-            if (path == null || path.coords == null || path.coords.Count == 0)
+            //if (path == null || path.coords == null || path.coords.Count == 0)
+            if (path == null || path.grid == null || path.grid.GetLength(0) == 0 || path.grid.GetLength(1) == 0)
+
+            //if (path == null || path.grid == null || path.grid.Count == 0)
             {
                 Debug.LogWarning($"{nameof(BoardBuilder)}: Path が未設定または空です。生成を中止します。", this);
                 ok = false;
