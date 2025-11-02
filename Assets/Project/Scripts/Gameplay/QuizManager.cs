@@ -87,14 +87,25 @@ public class QuizManager : MonoBehaviour
             DontDestroyOnLoad(es);
         }
 
-        // Canvas
-        Canvas canvas = FindObjectOfType<Canvas>();
-        GameObject canvasGO = null;
+        // Canvas: ScreenSpaceOverlay の既存 Canvas を優先して探す。なければ新規作成。
+        Canvas canvas = null;
+        var allCanvases = FindObjectsOfType<Canvas>();
+        foreach (var c in allCanvases)
+        {
+            if (c.renderMode == RenderMode.ScreenSpaceOverlay)
+            {
+                canvas = c;
+                break;
+            }
+        }
+        GameObject canvasGO;
         if (canvas == null)
         {
             canvasGO = new GameObject("QuizCanvas");
             canvas = canvasGO.AddComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            canvas.overrideSorting = true;
+            canvas.sortingOrder = 1000;
             canvasGO.AddComponent<CanvasScaler>();
             canvasGO.AddComponent<GraphicRaycaster>();
             DontDestroyOnLoad(canvasGO);
@@ -102,31 +113,45 @@ public class QuizManager : MonoBehaviour
         else
         {
             canvasGO = canvas.gameObject;
+            // 既存 Canvas があっても上に出るように調整
+            try { canvas.overrideSorting = true; canvas.sortingOrder = Mathf.Max(canvas.sortingOrder, 1000); } catch { }
         }
 
-        dialogRoot = new GameObject("QuizDialog");
+        // ダイアログのルートを RectTransform 付きで作成
+        dialogRoot = new GameObject("QuizDialog", typeof(RectTransform));
         dialogRoot.transform.SetParent(canvasGO.transform, false);
+        var dialogRt = dialogRoot.GetComponent<RectTransform>();
+        dialogRt.anchorMin = new Vector2(0, 0);
+        dialogRt.anchorMax = new Vector2(1, 1);
+        dialogRt.offsetMin = dialogRt.offsetMax = Vector2.zero;
+        dialogRoot.SetActive(true);
+        Debug.Log("QuizManager: Created dialog root under canvas " + canvasGO.name);
 
-        var panel = new GameObject("Panel");
-        panel.transform.SetParent(dialogRoot.transform, false);
-        var img = panel.AddComponent<Image>();
-        img.color = new Color(0f, 0f, 0f, 0.75f);
-        var rt = panel.GetComponent<RectTransform>();
-        rt.anchorMin = new Vector2(0.1f, 0.25f);
-        rt.anchorMax = new Vector2(0.9f, 0.75f);
-        rt.offsetMin = rt.offsetMax = Vector2.zero;
+    var panel = new GameObject("Panel", typeof(RectTransform));
+    panel.transform.SetParent(dialogRoot.transform, false);
+    var img = panel.AddComponent<Image>();
+    // 白背景で中央に固定サイズのパネルにして視認性を高める
+    img.color = Color.white;
+    var rt = panel.GetComponent<RectTransform>();
+    // 中央に幅50% 高さ30% のパネル
+    rt.anchorMin = new Vector2(0.25f, 0.35f);
+    rt.anchorMax = new Vector2(0.75f, 0.65f);
+    rt.offsetMin = rt.offsetMax = Vector2.zero;
+    // Add a slight scale/size to ensure visibility on various resolutions
+    rt.sizeDelta = new Vector2(0, 0);
 
         // Question Text
-        var qGO = new GameObject("QuestionText");
+        var qGO = new GameObject("QuestionText", typeof(RectTransform));
         qGO.transform.SetParent(panel.transform, false);
         var qText = qGO.AddComponent<Text>();
-        qText.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
-        qText.alignment = TextAnchor.UpperCenter;
-        qText.fontSize = 28;
-        qText.color = Color.white;
+        qText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+        // 大きめの黒文字で中央寄せ
+        qText.alignment = TextAnchor.MiddleCenter;
+        qText.fontSize = 36;
+        qText.color = Color.black;
         qText.text = q.question;
         var qrt = qGO.GetComponent<RectTransform>();
-        qrt.anchorMin = new Vector2(0.05f, 0.6f);
+        qrt.anchorMin = new Vector2(0.05f, 0.55f);
         qrt.anchorMax = new Vector2(0.95f, 0.95f);
         qrt.offsetMin = qrt.offsetMax = Vector2.zero;
 
@@ -148,15 +173,20 @@ public class QuizManager : MonoBehaviour
             var btTextGO = new GameObject("Text");
             btTextGO.transform.SetParent(bGO.transform, false);
             var btText = btTextGO.AddComponent<Text>();
-            btText.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+            btText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             btText.alignment = TextAnchor.MiddleCenter;
+            btText.fontSize = 24;
             btText.color = Color.black;
             btText.text = q.options[i];
 
             var brt = bGO.GetComponent<RectTransform>();
-            brt.anchorMin = new Vector2(0.1f, 0.45f - i * 0.12f);
-            brt.anchorMax = new Vector2(0.9f, 0.55f - i * 0.12f);
+            // ボタンはパネル下部に縦に並べる（下から上へ）
+            float baseY = 0.15f + (optionCount - 1) * 0.14f;
+            brt.anchorMin = new Vector2(0.1f, baseY - i * 0.14f - 0.12f);
+            brt.anchorMax = new Vector2(0.9f, baseY - i * 0.14f);
             brt.offsetMin = brt.offsetMax = Vector2.zero;
+            // ボタンの色を薄いグレーに
+            bImg.color = new Color(0.9f, 0.9f, 0.9f, 1f);
 
             var tRt = btTextGO.GetComponent<RectTransform>();
             tRt.anchorMin = Vector2.zero;
