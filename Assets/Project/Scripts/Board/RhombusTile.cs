@@ -71,6 +71,7 @@ public class RhombusTile : MonoBehaviour
                 case TileEvent.EventType.ExtraTurn: col = new Color(1.0f, 0.8824f, 0.4196f);   break;
                 case TileEvent.EventType.SkipNext:  col = new Color(0.784f, 0.784f, 0.784f);   break;
                 case TileEvent.EventType.GoToStart: col = new Color(0.941f, 0.498f, 0.941f);   break;
+                case TileEvent.EventType.Quiz:      col = new Color(1.0f, 1.0f, 1.0f);       break;
                 default:                            col = this.color;   break;
             }
         }

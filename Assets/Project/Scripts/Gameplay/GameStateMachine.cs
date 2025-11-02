@@ -133,6 +133,22 @@ public class GameStateMachine : MonoBehaviour
                 // スタートに戻る
                 yield return myToken.MoveStepsSignedEvent(-myToken.currentIndex);
                 break;
+            case TileEvent.EventType.Quiz:
+                // クイズ出題。正解なら1マス進む
+                if (QuizManager.Instance == null)
+                {
+                    // 存在しない場合は生成
+                    new GameObject("QuizManager").AddComponent<QuizManager>();
+                }
+
+                bool answeredCorrect = false;
+                // QuizManager のコルーチンを呼んで結果を受け取る
+                yield return QuizManager.Instance.AskRandomQuestionRoutine((ok) => { answeredCorrect = ok; });
+                if (answeredCorrect)
+                {
+                    yield return myToken.MoveStepsEvent(1);
+                }
+                break;
         }
     }
 }

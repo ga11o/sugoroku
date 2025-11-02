@@ -12,6 +12,7 @@ public class TileEvent
         ExtraTurn,  // もう一度サイコロを振れる
         SkipNext,   // 一回休み
         GoToStart,   // スタートに戻る
+        Quiz        // クイズイベント（正解で1マス進む）
     }
 
     public EventType eventType = EventType.None;
