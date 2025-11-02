@@ -16,6 +16,9 @@ public class TokenMover : MonoBehaviour
     public int currentIndex = 0;
     public bool isMoving = false;
     private bool eventResolving = false; // ★ 追加：イベント処理中フラグ
+    public bool SkipTurn {get; set;} = false;
+    public bool ExtraTurn {get; set;} = false;
+    public bool isCPU {get; set;} = false;
 
     public event System.Action MoveCompleted; // 移動完了イベント    
 
@@ -25,7 +28,7 @@ public class TokenMover : MonoBehaviour
     public float jumpFrequency = 0f;     // 浮き中の細かな揺れ回数（0でなし）
 
     [Header("Tokenの位置調整")]
-    public Vector3 tokenOffset = new Vector3(0f, 1f, 0f); // Tokenの中心がタイル中央に来るようにするオフセット
+    public Vector3 tokenOffset = new Vector3(0f, 1f, -4f); // Tokenの中心がタイル中央に来るようにするオフセット
 
     // 正規化進捗(0..1)に応じた上下オフセット（開始/終了は0＝着地）
     private Vector3 GetJumpOffset(float normalizedProgress)

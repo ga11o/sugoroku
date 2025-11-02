@@ -55,7 +55,7 @@ public class DiceUIController : MonoBehaviour
         StartCoroutine(RollRoutine());
     }
 
-    IEnumerator RollRoutine()
+    public IEnumerator RollRoutine()
     {
         rolling = true;
         if (rollButton) rollButton.interactable = false;
