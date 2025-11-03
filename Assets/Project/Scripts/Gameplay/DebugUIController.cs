@@ -21,18 +21,33 @@ public class DebugUIController : MonoBehaviour
     public TMP_Text movingText;            // 移動中か
     public TMP_Text diceMirrorText;        // ダイスの表示をミラー
 
-    void Start()
+    void Awake()
     {
-        // 既存ボタンの結線
-        if (stepPlusBtn)  stepPlusBtn.onClick.AddListener(OnStepPlus);
-        if (stepMinusBtn) stepMinusBtn.onClick.AddListener(OnStepMinus);
+        if (token == null) token = FindObjectOfType<TokenMover>();
+        if (dice  == null) dice  = FindObjectOfType<DiceUIController>();
+        if (gsm   == null) gsm   = FindObjectOfType<GameStateMachine>();
 
-        // 入力欄の有効/無効（必要に応じて）
-        if (useFixedToggle && fixedValueInput)
+        if (useFixedToggle != null)
         {
-            fixedValueInput.interactable = useFixedToggle.isOn;
-            useFixedToggle.onValueChanged.AddListener(on => fixedValueInput.interactable = on);
+            useFixedToggle.isOn = dice ? dice.debugUseFixed : false;
+            useFixedToggle.onValueChanged.AddListener(v => { if (dice) dice.debugUseFixed = v; });
         }
+
+        if (fixedValueInput != null)
+        {
+            int init = (dice != null) ? dice.debugFixedValue : 6;
+            fixedValueInput.text = init.ToString();
+            fixedValueInput.onEndEdit.AddListener(s =>
+            {
+                if (dice == null) return;
+                if (int.TryParse(s, out int v))
+                    dice.debugFixedValue = Mathf.Clamp(v, 1, 6);
+                fixedValueInput.text = dice.debugFixedValue.ToString();
+            });
+        }
+
+        if (stepPlusBtn != null)  stepPlusBtn.onClick.AddListener(OnStepPlus);
+        if (stepMinusBtn != null) stepMinusBtn.onClick.AddListener(OnStepMinus);
     }
 
     void Update()
@@ -110,14 +125,19 @@ public class DebugUIController : MonoBehaviour
         int n = token.board.Count;
         int idx = token.currentIndex;
 
-    if (warpIndexInput && int.TryParse(warpIndexInput.text, out var parsed))
+        if (warpIndexInput && int.TryParse(warpIndexInput.text, out var parsed))
         {
             idx = Mathf.Clamp(parsed, 0, n - 1);
         }
 
-        // ★ イベントを発火しない安全なワープ
-        Vector3 pos = token.board.GetPoint(idx);
-        token.transform.position = pos;
+        // ★ 追加：いまの見え方（オフセット）を保つ
+        Vector3 currentAnchor = token.board.GetPoint(token.currentIndex);
+        Vector3 currentDelta  = token.transform.position - currentAnchor;
+
+        Vector3 targetAnchor  = token.board.GetPoint(idx);
+        Vector3 targetPos     = targetAnchor + currentDelta;
+
+        token.transform.position = targetPos;
         token.currentIndex = idx;
         token.isMoving = false;
 
