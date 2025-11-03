@@ -1,6 +1,9 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using System.Collections.Generic;
+
+
 
 public class GameStateMachine : MonoBehaviour
 {
@@ -20,6 +23,7 @@ public class GameStateMachine : MonoBehaviour
     public TokenMover cpuToken;        // CPUの駒
     public DiceUIController diceUI;   // サイコロUI
     public CameraFollow2D cameraFollow; // カメラ追従
+
 
     [Header("調整")]
     public float otherTurnDelay = 0.6f;  // 他ターンのダミー待ち
