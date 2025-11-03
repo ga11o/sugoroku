@@ -1,6 +1,9 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using System.Collections.Generic;
+
+
 
 public class GameStateMachine : MonoBehaviour
 {
@@ -17,6 +20,7 @@ public class GameStateMachine : MonoBehaviour
     public TokenMover myToken;           // 自分の駒（今は1人想定）
     [Tooltip("将来AIや他プレイヤーの駒を使うならここに追加する")]
     public TokenMover otherToken;        // 任意/今は未使用
+
 
     [Header("調整")]
     public float otherTurnDelay = 0.6f;  // 他ターンのダミー待ち
@@ -70,7 +74,15 @@ public class GameStateMachine : MonoBehaviour
         // 現在のマスのイベント処理
         if (myToken != null && myToken.board != null)
         {
-            yield return ExecuteTileEvent(myToken.board.path.events[(myToken.currentIndex% myToken.board.path.events.Count)]);
+            // 現在位置の Waypoint を取得
+            var wp = myToken.board.waypoints[myToken.currentIndex]
+                        .GetComponent<Waypoint>();
+
+            if (wp != null && wp.tileEvent != null)
+            {
+                yield return ExecuteTileEvent(wp.tileEvent);
+            }
+
             if (extraTurnPending)
             {
                 extraTurnPending = false; // フラグをリセット
@@ -78,6 +90,9 @@ public class GameStateMachine : MonoBehaviour
                 yield break;
             }
         }
+
+      
+
 
         // 今はダミーとして「相手のターン」を少しだけ挟む
         SetState(GameState.OtherTurn);

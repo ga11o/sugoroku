@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6bf150e7111c5c640bb899ae3cb221b8, type: 3}
   m_Name: BoardPath
   m_EditorClassIdentifier: 
-  tileSpacing: 1.4
+  tileSpacing: 5
   coords:
   - {x: 0, y: 0}
   - {x: 1, y: 0}
