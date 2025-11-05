@@ -25,7 +25,7 @@ public class EndScreenController : MonoBehaviour
         gameObject.SetActive(true); // フェード動作のため有効化
     }
 
-    public void Show(string title = "ゴール！", string subtitle = "おめでとう")
+    public void Show(string title = "FINISH!", string subtitle = null)
     {
         if (titleText) titleText.text = title;
         if (subtitleText) subtitleText.text = subtitle;
