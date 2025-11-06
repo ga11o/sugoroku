@@ -1,8 +1,15 @@
 using System.Collections;
 using UnityEngine;
 
+using System.Collections.Generic;
+
 public class TokenMover : MonoBehaviour
 {
+    public Waypoint currentWaypoint; 
+    private Waypoint previousWaypoint;
+    private Stack<Waypoint> pathHistory = new Stack<Waypoint>();
+    public GameStateMachine gameState; // ← インスペクタでセット
+
     [Header("参照")]
     public BoardBuilder board;
     public EndScreenController endScreen;   // ← 追加：終了画面
@@ -27,6 +34,31 @@ public class TokenMover : MonoBehaviour
     [Header("Tokenの位置調整")]
     public Vector3 tokenOffset = new Vector3(0f, 1f, 0f); // Tokenの中心がタイル中央に来るようにするオフセット
 
+    /*public GameObject branchButtonPrefab;
+    public Transform branchUIRoot;
+
+    public IEnumerator ShowBranchChoice(List<Waypoint> options, System.Action<Waypoint> onChosen)
+    {
+        bool decided = false;
+        Waypoint chosen = null;
+
+        foreach (var opt in options)
+        {
+            var btnObj = Instantiate(branchButtonPrefab, branchUIRoot);
+            var btn = btnObj.GetComponent<UnityEngine.UI.Button>();
+            var label = btnObj.GetComponentInChildren<TMPro.TMP_Text>();
+            label.text = opt.name; // まずは名前で表示
+
+            btn.onClick.AddListener(() => { chosen = opt; decided = true; });
+        }
+
+        yield return new WaitUntil(() => decided);
+
+        foreach (Transform child in branchUIRoot) Destroy(child.gameObject);
+
+        onChosen?.Invoke(chosen);
+    }*/
+
     // 正規化進捗(0..1)に応じた上下オフセット（開始/終了は0＝着地）
     private Vector3 GetJumpOffset(float normalizedProgress)
     {
@@ -44,9 +76,27 @@ public class TokenMover : MonoBehaviour
     }
 
     void Start()
-    {
-        if (board != null && board.Count > 0)
-            transform.position = board.GetPoint(currentIndex) + tokenOffset; //初期位置をtokenOffset分ずらす
+    {   
+        if (gameState == null)
+        {
+            gameState = FindObjectOfType<GameStateMachine>();
+            if (gameState == null)
+            {
+                Debug.LogError("GameStateMachine がシーンに見つかりません！");
+            }
+        }
+
+        if (board != null && board.waypoints.Count > 0)
+        {
+            currentWaypoint = board.waypoints[0];
+            transform.position = currentWaypoint.transform.position;
+        }
+        else
+        {
+            Debug.LogError("Board または waypoints が未設定です");
+        }
+        //if (board != null && board.Count > 0)
+        //  transform.position = board.GetPoint(currentIndex) + tokenOffset; //初期位置をtokenOffset分ずらす
     }
 
     void Update()
@@ -72,27 +122,79 @@ public class TokenMover : MonoBehaviour
         if (steps <= 0) yield break;
         isMoving = true;
 
-        int lastIndex = board.Count - 1;
-        int targetIndex = currentIndex + steps;
-        if (stopAtGoal && targetIndex > lastIndex) targetIndex = lastIndex;
-
-        while (currentIndex < targetIndex)
+        for (int i = 0; i < steps; i++)
         {
-            int next = Mathf.Min(currentIndex + 1, lastIndex);
-            yield return MoveToIndex(next);
-            currentIndex = next;
+            //if (currentWaypoint == null || currentWaypoint.nextWaypoints.Count == 0)
+            if (currentWaypoint == null || (currentWaypoint.mainNext == null && currentWaypoint.branchNexts.Count == 0))
+            {
+                Debug.Log("これ以上進めません");
+                break;
+            }
 
-            if (currentIndex >= lastIndex) break; // ゴール
+            Waypoint next = null;
+
+            // 分岐がある場合
+            if (currentWaypoint.branchNexts.Count > 0)
+            {
+                if (currentWaypoint.branchNexts.Count == 1)
+                {
+                    next = currentWaypoint.branchNexts[0]; // 自動進行
+                }
+                else
+                {
+                    // 分岐選択UIを呼ぶ処理に置き換え可能
+                    foreach (var candidate in currentWaypoint.branchNexts)
+                    {
+                        if (candidate != previousWaypoint)
+                        {
+                            next = candidate;
+                            break;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                // 通常の一本道
+                next = currentWaypoint.mainNext;
+            }
+
+
+            if (next == null) break;
+
+            // ★ デバッグログ追加
+            Debug.Log($"[MoveSteps] {currentWaypoint.name} → {next.name}");
+            // 移動
+            yield return MoveTo(next.transform.position + tokenOffset);
+
+            // 更新
+            previousWaypoint = currentWaypoint;
+            pathHistory.Push(currentWaypoint);
+            currentWaypoint = next;
+
         }
 
+        // ★ イベントマスに止まったらイベント処理を呼ぶ
+        if (!eventResolving && currentWaypoint.tileEvent != null)
+        {
+            Debug.Log("イベント呼び出し: " + currentWaypoint.tileEvent.eventType);
+            yield return gameState.ExecuteTileEvent(currentWaypoint.tileEvent);
+        }
         isMoving = false;
 
-        // ★ ゴール到達で終了画面
-        if (currentIndex >= board.Count - 1 && endScreen != null)
-            endScreen.Show("ゴール！", "おめでとう 🎉");
-        
-        // その直後にイベント通知
+        // ★ ゴール判定
+        if (currentWaypoint != null && currentWaypoint.isGoal)
+        {
+            Debug.Log("ゴールに到達！");
+            if (endScreen != null)
+            {
+                endScreen.Show("ゴール！", "おめでとう 🎉");
+            }
+            yield break; // 移動終了
+        }
+
         if (!eventResolving) MoveCompleted?.Invoke();
+        
     }
 
     IEnumerator MoveToIndex(int targetIndex)
@@ -129,27 +231,56 @@ public class TokenMover : MonoBehaviour
         return true;
     }
 
+
     IEnumerator MoveStepsSigned(int steps)
     {
         isMoving = true;
-
         int dir = (steps > 0) ? 1 : -1;
         int remain = Mathf.Abs(steps);
-        int lastIndex = board.Count - 1;
 
         while (remain > 0)
         {
-            int next = Mathf.Clamp(currentIndex + dir, 0, lastIndex);
-            if (next == currentIndex) break;      // 端に到達
+            Waypoint next = null;
+            if (dir > 0)
+            {
+                // 前進
+                if (currentWaypoint.branchNexts.Count > 0)
+                {
+                    next = currentWaypoint.branchNexts[0]; // 仮：分岐候補が1つなら自動
+                }
+                else
+                {
+                    next = currentWaypoint.mainNext;
+                }
+            }
+            else
+            {
+                // 後退
+                if (pathHistory.Count > 0)
+                {
+                    next = pathHistory.Pop();
+                }
+                else
+                {
+                    next = currentWaypoint.previous;
+                }
+            }
 
-            yield return MoveToIndex(next);
-            currentIndex = next;
+            if (next == null) break;
+
+            // ★ デバッグログ追加
+            Debug.Log($"[MoveStepsSigned] {currentWaypoint.name} → {next.name}");
+
+            yield return MoveTo(next.transform.position + tokenOffset);
+            previousWaypoint = currentWaypoint;
+            currentWaypoint = next;
             remain--;
         }
 
         isMoving = false;
-        if(!eventResolving) MoveCompleted?.Invoke(); // ステートマシンへ通知（必要なら）
+        if (!eventResolving) MoveCompleted?.Invoke();
     }
+
 
     // ★ 追加：イベント処理用のコルーチン
     public IEnumerator MoveStepsEvent(int steps)
@@ -157,8 +288,46 @@ public class TokenMover : MonoBehaviour
         eventResolving = true; // ★ イベント処理中フラグを立てる
         yield return MoveSteps(steps);
         eventResolving = false; // ★ フラグを下ろす
+
     }
 
+    public IEnumerator MoveTo(Vector3 target)
+    {
+        Vector3 start = transform.position;
+        float t = 0f;
+        float duration = Mathf.Max(0.01f, secondsPerTile);
+
+        while (t < 1f)
+        {
+            t += Time.deltaTime / duration;
+            float u = Mathf.SmoothStep(0f, 1f, t);
+
+            // 線形補間
+            Vector3 basePos = Vector3.Lerp(start, target, u);
+
+            // ★ ジャンプオフセットを加える
+            transform.position = basePos + GetJumpOffset(u);
+
+            yield return null;
+        }
+
+        transform.position = target;
+    }
+
+    public IEnumerator GoToStart()
+    {
+        isMoving = true;
+        while (pathHistory.Count > 0)
+        {
+            var prev = pathHistory.Pop();
+
+            Debug.Log($"[GoToStart] {currentWaypoint.name} → {prev.name}");
+            yield return MoveTo(prev.transform.position + tokenOffset);
+            previousWaypoint = currentWaypoint;
+            currentWaypoint = prev;
+        }
+        isMoving = false;
+    }
     // ★ 追加：イベント処理用の符号付きコルーチン
     public IEnumerator MoveStepsSignedEvent(int steps)
     {
