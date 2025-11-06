@@ -58,7 +58,8 @@ public class GameStateMachine : MonoBehaviour
     void OnMyTokenMoveCompleted()
     {
         // ゴール到達は TokenMover が画面を出す仕様のままでOK。ここでは状態だけ End に。
-        if (myToken.board != null && myToken.currentIndex >= myToken.board.Count - 1)
+        if (myToken.currentWaypoint != null &&
+        myToken.currentWaypoint.transform.parent.name.Contains("Goal"))
         {
             SetState(GameState.End);
             return;
@@ -75,11 +76,10 @@ public class GameStateMachine : MonoBehaviour
         if (myToken != null && myToken.board != null)
         {
             // 現在位置の Waypoint を取得
-            var wp = myToken.board.waypoints[myToken.currentIndex]
-                        .GetComponent<Waypoint>();
-
+            var wp = myToken.currentWaypoint;
             if (wp != null && wp.tileEvent != null)
             {
+                //Debug.Log("イベント呼び出し: " + wp.tileEvent.eventType);
                 yield return ExecuteTileEvent(wp.tileEvent);
             }
 
@@ -119,7 +119,7 @@ public class GameStateMachine : MonoBehaviour
     }
     
 
-    IEnumerator ExecuteTileEvent(TileEvent tile)
+    public IEnumerator ExecuteTileEvent(TileEvent tile)
     {
         if (tile == null) yield break;
         
@@ -133,7 +133,6 @@ public class GameStateMachine : MonoBehaviour
                 yield return myToken.MoveStepsEvent(tile.value);
                 break;
             case TileEvent.EventType.Back:
-                // 指定マス戻る
                 yield return myToken.MoveStepsSignedEvent(-tile.value);
                 break;
             case TileEvent.EventType.ExtraTurn:
@@ -146,7 +145,7 @@ public class GameStateMachine : MonoBehaviour
                 break;
             case TileEvent.EventType.GoToStart:
                 // スタートに戻る
-                yield return myToken.MoveStepsSignedEvent(-myToken.currentIndex);
+                yield return myToken.GoToStart();
                 break;
         }
     }
