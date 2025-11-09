@@ -15,6 +15,7 @@ namespace Sugoroku.Atoms
         public Transform gridRoot;             // GridLayoutGroup の Transform
         public AtomCardView cardViewPrefab;    // カード表示用プレハブ
         public PlayerHand playerHand;          // プレイヤーの手札データ
+        public GameStateMachine gsm; // (拡張用)現在のプレイヤーは、 GameStateMachine から取得する必要がある
 
         [Header("Toggle Button")]
         public Button toggleButton;            // トグルボタン
@@ -26,7 +27,7 @@ namespace Sugoroku.Atoms
 
         void Awake()
         {
-            if (!playerHand) playerHand = FindObjectOfType<PlayerHand>();
+            if (!gsm) gsm = FindObjectOfType<GameStateMachine>();
 
             // 起動時は閉じた状態
             if (rootPanel) rootPanel.SetActive(false);
@@ -67,6 +68,7 @@ namespace Sugoroku.Atoms
 
         public void Refresh()
         {
+            playerHand = gsm.CurrentPlayer.atomHand;
             if (!playerHand || !gridRoot || !cardViewPrefab) return;
 
             var cards = playerHand.Cards;

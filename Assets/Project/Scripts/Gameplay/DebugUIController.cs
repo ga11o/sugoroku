@@ -5,7 +5,6 @@ using TMPro;
 public class DebugUIController : MonoBehaviour
 {
     [Header("参照")]
-    public TokenMover token;
     public DiceUIController dice;
     public GameStateMachine gsm;
 
@@ -17,13 +16,13 @@ public class DebugUIController : MonoBehaviour
 
     [Header("表示テキスト")]
     public TMP_Text stateText;             // 現在ステート
+    public TMP_Text turnText;              // 現在のターン数
+    public TMP_Text nameText;              // 現在のプレイヤー名
     public TMP_Text indexText;             // 現在マス
-    public TMP_Text movingText;            // 移動中か
     public TMP_Text diceMirrorText;        // ダイスの表示をミラー
 
     void Awake()
     {
-        if (token == null) token = FindObjectOfType<TokenMover>();
         if (dice  == null) dice  = FindObjectOfType<DiceUIController>();
         if (gsm   == null) gsm   = FindObjectOfType<GameStateMachine>();
 
@@ -54,8 +53,9 @@ public class DebugUIController : MonoBehaviour
     {
         // ラベル更新（存在チェックを十分に）
         if (gsm && stateText)   stateText.text   = $"State: {gsm.State}";
-        if (token && indexText) indexText.text   = $"Index: {token.currentIndex}";
-        if (token && movingText)movingText.text  = $"Moving: {token.isMoving}";
+        if (gsm.CurrentPlayer && turnText) turnText.text   = $"Turn: {gsm.currentTurn / gsm.players.Count + 1}";
+        if (gsm.CurrentPlayer && nameText) nameText.text   = $"Name: {gsm.CurrentPlayer.playerName}";
+        if (gsm.CurrentPlayer && indexText) indexText.text   = $"Index: {gsm.CurrentPlayer.currentIndex}";
         if (dice && diceMirrorText)
         {
             var t = dice.diceText ? dice.diceText.text : "-";
@@ -63,28 +63,26 @@ public class DebugUIController : MonoBehaviour
         }
 
         // 駒移動中は±ボタンを無効に
-        if (stepPlusBtn)  stepPlusBtn.interactable  = !(token && token.isMoving);
-        if (stepMinusBtn) stepMinusBtn.interactable = !(token && token.isMoving);
+        if (stepPlusBtn)  stepPlusBtn.interactable  = !(gsm.CurrentPlayer && gsm.CurrentPlayer.isMoving);
+        if (stepMinusBtn) stepMinusBtn.interactable = !(gsm.CurrentPlayer && gsm.CurrentPlayer.isMoving);
     }
 
     void OnStepPlus()
     {
-        // 可能ならステートマシン経由（自分のターンだけ+1）
+        // 自分のターンだけ+1移動（デバッグ専用）
         if (gsm != null && gsm.CanRoll())
         {
-            gsm.OnDiceFinal(1);
-        }
-        else if (token != null && !token.isMoving)
-        {
-            // デバッグ強制：状態に関係なく1マス進めたいとき
-            token.MoveBySigned(+1);
+            gsm.CurrentPlayer.MoveBy(1);
         }
     }
 
     void OnStepMinus()
     {
-        if (token != null && !token.isMoving)
-            token.MoveBySigned(-1); // 1マス戻る（デバッグ専用）
+        // 自分のターンだけ-1移動（デバッグ専用）
+        if (gsm != null && gsm.CanRoll())
+        {
+            gsm.CurrentPlayer.MoveBySigned(-1);
+        }
     }
 
     // ===== Debug Warp additions (Canvas-based) =====
@@ -96,7 +94,7 @@ public class DebugUIController : MonoBehaviour
     void OnEnable()
     {
         if (warpButton)   warpButton.onClick.AddListener(OnWarpClicked);
-        RefreshWarpOptions();
+        if (warpIndexInput) RefreshWarpOptions();
     }
 
     void OnDisable()
@@ -106,24 +104,24 @@ public class DebugUIController : MonoBehaviour
 
     void RefreshWarpOptions()
     {
-        if (token == null || token.board == null) return;
-        int n = token.board.Count;
+        if (gsm.players.Count == 0 || gsm.players[0].board == null) return;
+        int n = gsm.players[0].board.Count;
         var opts = new System.Collections.Generic.List<string>(n);
         for (int i = 0; i < n; i++) opts.Add(i.ToString("000"));
 
-        if (0 <= token.currentIndex && token.currentIndex < n)
+        if (0 <= gsm.CurrentPlayer.currentIndex && gsm.CurrentPlayer.currentIndex < n)
         {
-            if (warpIndexInput) warpIndexInput.text = token.currentIndex.ToString();
+            warpIndexInput.text = gsm.CurrentPlayer.currentIndex.ToString();
         }
     }
 
     void OnWarpClicked()
     {
-        if (token == null || token.board == null) { Debug.LogWarning("[DebugUI] token/board 未設定"); return; }
-        if (token.isMoving) { Debug.LogWarning("[DebugUI] 移動中はワープ不可"); return; }
+        if (gsm.players.Count == 0 || gsm.players[0].board == null) { Debug.LogWarning("[DebugUI] token/board 未設定"); return; }
+        if (gsm.CurrentPlayer.isMoving) { Debug.LogWarning("[DebugUI] 移動中はワープ不可"); return; }
 
-        int n = token.board.Count;
-        int idx = token.currentIndex;
+        int n = gsm.players[0].board.Count;
+        int idx = gsm.CurrentPlayer.currentIndex;
 
         if (warpIndexInput && int.TryParse(warpIndexInput.text, out var parsed))
         {
@@ -131,15 +129,16 @@ public class DebugUIController : MonoBehaviour
         }
 
         // ★ 追加：いまの見え方（オフセット）を保つ
-        Vector3 currentAnchor = token.board.GetPoint(token.currentIndex);
-        Vector3 currentDelta  = token.transform.position - currentAnchor;
+        Vector3 currentAnchor = gsm.CurrentPlayer.board.GetPoint(gsm.CurrentPlayer.currentIndex);
+        Vector3 currentDelta  = gsm.CurrentPlayer.transform.position - currentAnchor;
 
-        Vector3 targetAnchor  = token.board.GetPoint(idx);
+        Vector3 targetAnchor  = gsm.CurrentPlayer.board.GetPoint(idx);
         Vector3 targetPos     = targetAnchor + currentDelta;
 
-        token.transform.position = targetPos;
-        token.currentIndex = idx;
-        token.isMoving = false;
+        gsm.CurrentPlayer.transform.position = targetPos;
+        gsm.CurrentPlayer.currentIndex = idx;
+        gsm.CurrentPlayer.currentWaypoint = gsm.CurrentPlayer.board.waypoints[idx];
+        gsm.CurrentPlayer.isMoving = false;
 
         Debug.Log($"[DebugUI] Warp to index {idx}");
     }
