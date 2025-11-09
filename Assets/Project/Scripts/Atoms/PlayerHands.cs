@@ -1,39 +1,94 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Sugoroku.Atoms
 {
-    // プレイヤーが所有する原子カードの手札
+    public enum HandSortMode { AtomicNumberAsc, SymbolAsc, NameAsc }
+
+    /// <summary>
+    /// 原子カードの所持管理（自動ソート、変更通知つき）
+    /// </summary>
     public class PlayerHand : MonoBehaviour
     {
-        [Tooltip("初期手札（テスト用に Inspector から設定可）")]
-        public List<AtomCardDef> initialCards = new List<AtomCardDef>();
+        [Tooltip("初期手札（テスト用）")]
+        public List<AtomCardDef> initialCards = new();
 
-        [SerializeField] private List<AtomCardDef> _cards = new List<AtomCardDef>();
+        [Header("Sort")]
+        public bool autoSortOnAdd = true;
+        public HandSortMode sortMode = HandSortMode.AtomicNumberAsc;
+
+        [SerializeField] private List<AtomCardDef> _cards = new();
         public IReadOnlyList<AtomCardDef> Cards => _cards;
+
+        /// <summary>
+        /// 手札の変化を通知するイベント
+        /// </summary>
+        public event Action OnChanged;
 
         void Awake()
         {
-            _cards.Clear();
-            if (initialCards != null) _cards.AddRange(initialCards);
+            _cards = new List<AtomCardDef>(initialCards ?? new List<AtomCardDef>());
+            if (autoSortOnAdd) SortInPlace();
         }
 
-        // 取得
-        public void Add(AtomCardDef card) { if (card) _cards.Add(card); }
-
-        // 破棄（1枚だけ）
-        public bool RemoveOne(AtomCardDef card)
+        public void Add(AtomCardDef card)
         {
-            return _cards.Remove(card);
+            if (!card) return;
+            _cards.Add(card);
+            if (autoSortOnAdd) SortInPlace();
+            OnChanged?.Invoke();
         }
 
-        // 複製（同じカードを1枚追加）
         public void Duplicate(AtomCardDef card)
         {
-            if (card) _cards.Add(card);
+            if (!card) return;
+            _cards.Add(card);
+            if (autoSortOnAdd) SortInPlace();
+            OnChanged?.Invoke();
         }
 
-        // 全破棄
-        public void Clear() => _cards.Clear();
+        public bool RemoveOne(AtomCardDef card)
+        {
+            bool ok = _cards.Remove(card);
+            if (ok) OnChanged?.Invoke();
+            return ok;
+        }
+
+        /// <summary>
+        /// 複数のカードをまとめて削除
+        /// </summary>
+        public void RemoveMany(IEnumerable<AtomCardDef> cards)
+        {
+            if (cards == null) return;
+            bool changed = false;
+            foreach (var c in cards.ToList())
+                changed |= _cards.Remove(c);
+            if (changed) OnChanged?.Invoke();
+        }
+
+        public void Clear()
+        {
+            if (_cards.Count == 0) return;
+            _cards.Clear();
+            OnChanged?.Invoke();
+        }
+
+        public void SortInPlace()
+        {
+            switch (sortMode)
+            {
+                case HandSortMode.AtomicNumberAsc:
+                    _cards = _cards.OrderBy(c => c.atomicNumber).ThenBy(c => c.symbolJP).ToList();
+                    break;
+                case HandSortMode.SymbolAsc:
+                    _cards = _cards.OrderBy(c => c.symbolJP).ThenBy(c => c.atomicNumber).ToList();
+                    break;
+                case HandSortMode.NameAsc:
+                    _cards = _cards.OrderBy(c => c.nameJP).ThenBy(c => c.atomicNumber).ToList();
+                    break;
+            }
+        }
     }
 }
