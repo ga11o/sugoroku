@@ -31,6 +31,13 @@ public class GameStateMachine : MonoBehaviour
     public GameState State { get; private set; } = GameState.MyTurn_AwaitInput;
     public event Action<GameState, GameState> OnStateChanged;
 
+    [Header("Quiz trigger (optional)")]
+    [Tooltip("If enabled, QuizManager will be asked to show a quiz when entering the selected GameState")]
+    public bool showQuizOnState = false;
+    public GameState quizTriggerState = GameState.MyTurn_Resolving;
+    [Tooltip("If true, timeScale will be set to 0 while the quiz is active (and restored after)")]
+    public bool pauseDuringQuiz = true;
+
     void Start()
     {
         if (myToken == null) myToken = FindObjectOfType<TokenMover>();
@@ -115,7 +122,34 @@ public class GameStateMachine : MonoBehaviour
         var prev = State;
         State = next;
         OnStateChanged?.Invoke(prev, next);
+        // Quiz trigger hook: if configured, show quiz when entering the selected state
+        if (showQuizOnState && next == quizTriggerState)
+        {
+            StartCoroutine(ShowQuizOnState());
+        }
         // 必要ならここで UI の有効/無効を切り替える
+    }
+
+    IEnumerator ShowQuizOnState()
+    {
+        if (QuizManager.Instance == null)
+        {
+            var go = new GameObject("QuizManager");
+            go.AddComponent<QuizManager>();
+            // wait a frame to ensure Awake ran
+            yield return null;
+        }
+
+        bool answered = false;
+        if (pauseDuringQuiz) Time.timeScale = 0f;
+
+        yield return QuizManager.Instance.AskRandomQuestionRoutine((ok) => { answered = ok; });
+
+        if (pauseDuringQuiz) Time.timeScale = 1f;
+
+        // Optionally, you can react to the result here (answered==true means correct)
+        // e.g. grant a bonus move, set flags, etc. For now we just return.
+        yield break;
     }
     
 
