@@ -130,6 +130,7 @@ public class BoardBuilder : MonoBehaviour
                     case 12: ev = new TileEvent(TileEvent.EventType.SkipNext); break;
                     case 13: ev = new TileEvent(TileEvent.EventType.ExtraTurn); break;
                     case 14: ev = new TileEvent(TileEvent.EventType.GoToStart); break;
+                    case 15: ev = new TileEvent(TileEvent.EventType.Quiz); break;
                 }
 
                 // Waypoint を必ず作成
@@ -211,7 +212,7 @@ public class BoardBuilder : MonoBehaviour
                 if (waypointGrid.TryGetValue((x,y+1), out var branchDown)) wp.branchNexts.Add(branchDown);
                 if (waypointGrid.TryGetValue((x-1,y), out var branchLeft)) wp.branchNexts.Add(branchLeft);
                 if (waypointGrid.TryGetValue((x,y-1), out var branchUp))   wp.branchNexts.Add(branchUp);
-                if (waypointGrid.TryGetValue((x+1,y), out var branchRight)) wp.branchNexts.Add(branchRight);
+                if (waypointGrid.TryGetValue((x + 1, y), out var branchRight)) wp.branchNexts.Add(branchRight);
             }        
         }
     }
