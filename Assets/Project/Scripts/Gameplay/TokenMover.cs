@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Sugoroku.Atoms;
 
 public class TokenMover : MonoBehaviour
 {
@@ -8,11 +9,16 @@ public class TokenMover : MonoBehaviour
     private Waypoint previousWaypoint;
     private Stack<Waypoint> pathHistory = new Stack<Waypoint>();
 
-    public GameStateMachine gameState; // インスペクタでセット
-
     [Header("参照")]
     public BoardBuilder board;
+    public GameStateMachine gsm;
     public EndScreenController endScreen;
+
+    [Header("プレイヤー情報")]
+    public string playerName;
+    public int ordinalPlayerNumber; // プレイヤー番号(何番目に行動するか、0始まり)
+    public bool isCPU {get; set;} = false;
+    public PlayerHand atomHand; // 原子カード手札
 
     [Header("移動設定")]
     public float secondsPerTile = 0.22f;
@@ -23,6 +29,8 @@ public class TokenMover : MonoBehaviour
     public int currentIndex = 0;
     public bool isMoving = false;
     private bool eventResolving = false; // イベント処理中フラグ
+    public bool SkipTurn {get; set;} = false;
+    public bool ExtraTurn {get; set;} = false;
 
     public event System.Action MoveCompleted; // 移動完了イベント    
 
@@ -32,7 +40,7 @@ public class TokenMover : MonoBehaviour
     public float jumpFrequency = 0f;
 
     [Header("Tokenの位置調整")]
-    public Vector3 tokenOffset = new Vector3(0f, 1f, 0f);
+    public Vector3 tokenOffset = new Vector3(0f, 1f, -3f);
 
     private Vector3 GetJumpOffset(float normalizedProgress)
     {
@@ -47,23 +55,23 @@ public class TokenMover : MonoBehaviour
     }
 
     void Start()
-    {   
-        if (gameState == null)
-        {
-            gameState = FindObjectOfType<GameStateMachine>();
-            if (gameState == null)
-                Debug.LogError("GameStateMachine がシーンに見つかりません！");
-        }
+    {
+        if (gsm   == null) gsm   = FindObjectOfType<GameStateMachine>();
 
         if (board != null && board.waypoints.Count > 0)
         {
             currentWaypoint = board.waypoints[0];
-            transform.position = currentWaypoint.transform.position;
+            transform.position = currentWaypoint.transform.position + tokenOffset;
         }
         else
         {
             Debug.LogError("Board または waypoints が未設定です");
         }
+
+        if (!atomHand){
+            atomHand = gameObject.AddComponent<PlayerHand>();
+        }
+        AdjustTokenPosition();
     }
 
     // ★ ダイスは DiceUIController に一本化するため、Update() のスペースキー処理は置かない
@@ -140,22 +148,14 @@ public class TokenMover : MonoBehaviour
 
             if (next == null) break;
 
-            // 移動
-            yield return MoveTo(next.transform.position + tokenOffset);
-
             // 更新
             previousWaypoint = currentWaypoint;
             pathHistory.Push(currentWaypoint);
             currentWaypoint = next;
-        }
 
-        // イベントマス
-        if (!eventResolving && currentWaypoint != null && currentWaypoint.tileEvent != null)
-        {
-            Debug.Log("イベント呼び出し: " + currentWaypoint.tileEvent.eventType);
-            yield return gameState.ExecuteTileEvent(currentWaypoint.tileEvent);
+            // 移動
+            yield return MoveTo(next.transform.position + tokenOffset);
         }
-
         isMoving = false;
 
         // ゴール
@@ -166,6 +166,7 @@ public class TokenMover : MonoBehaviour
             yield break;
         }
 
+        AdjustTokenPosition();
         if (!eventResolving) MoveCompleted?.Invoke();
     }
 
@@ -196,14 +197,14 @@ public class TokenMover : MonoBehaviour
 
             if (next == null) break;
 
-            yield return MoveTo(next.transform.position + tokenOffset);
-
             previousWaypoint = currentWaypoint;
             currentWaypoint = next;
+            yield return MoveTo(next.transform.position + tokenOffset);
             remain--;
         }
 
         isMoving = false;
+        AdjustTokenPosition();
         if (!eventResolving) MoveCompleted?.Invoke();
     }
 
@@ -223,6 +224,7 @@ public class TokenMover : MonoBehaviour
         }
 
         transform.position = target;
+        currentIndex = board.waypoints.IndexOf(currentWaypoint);
     }
 
     public IEnumerator GoToStart()
@@ -231,10 +233,48 @@ public class TokenMover : MonoBehaviour
         while (pathHistory.Count > 0)
         {
             var prev = pathHistory.Pop();
-            yield return MoveTo(prev.transform.position + tokenOffset);
             previousWaypoint = currentWaypoint;
             currentWaypoint = prev;
+            yield return MoveTo(prev.transform.position + tokenOffset);
         }
         isMoving = false;
+    }
+
+    // 同じマスにいる駒同士の位置をずらす
+    public void AdjustTokenPosition(){
+        if (currentWaypoint == null) return;
+
+        var tokenOnSameTile = new List<TokenMover>();
+        foreach (var idx in gsm.playerOrder)
+        {
+            if (gsm.players[idx].currentWaypoint == this.currentWaypoint)
+            {
+                tokenOnSameTile.Add(gsm.players[idx]);
+            }
+        }
+
+        switch (tokenOnSameTile.Count)
+        {
+            case 1:
+                tokenOnSameTile[0].transform.position = currentWaypoint.transform.position + tokenOffset;
+                break;
+            case 2:
+                tokenOnSameTile[0].transform.position = currentWaypoint.transform.position + new Vector3(-0.6f, 0.8f, -5f);
+                tokenOnSameTile[1].transform.position = currentWaypoint.transform.position + new Vector3(1f, 1.5f, -1f);
+                break;
+            case 3:
+                tokenOnSameTile[0].transform.position = currentWaypoint.transform.position + new Vector3(-0.4f, 0.5f, -5f);
+                tokenOnSameTile[1].transform.position = currentWaypoint.transform.position + new Vector3(-0.8f, 1.8f, -2f);
+                tokenOnSameTile[2].transform.position = currentWaypoint.transform.position + new Vector3(1.6f, 1.2f, -1f);
+                break;
+            case 4:
+                tokenOnSameTile[0].transform.position = currentWaypoint.transform.position + new Vector3(0f, 0.5f, -5f);
+                tokenOnSameTile[1].transform.position = currentWaypoint.transform.position + new Vector3(-1.6f, 1.2f, -4f);
+                tokenOnSameTile[2].transform.position = currentWaypoint.transform.position + new Vector3(0f, 2f, -1f);
+                tokenOnSameTile[3].transform.position = currentWaypoint.transform.position + new Vector3(1.6f, 1.2f, -2f);
+                break;
+            default:
+                break;
+        }
     }
 }
