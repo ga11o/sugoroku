@@ -26,13 +26,9 @@ public class DiceUIController : MonoBehaviour
     public bool debugUseFixed = false;
     [Range(1,6)] public int debugFixedValue = 6;
 
-    [Header("Molecule Effects")]
-    public PlayerMoleculeHand playerMoleculeHand;
-
     void Awake()
     {
         if (gsm   == null) gsm   = FindObjectOfType<GameStateMachine>();
-        if (playerMoleculeHand == null) playerMoleculeHand = FindObjectOfType<PlayerMoleculeHand>(true);
 
         if (rollButton != null)
             rollButton.onClick.AddListener(OnClickRoll);
@@ -84,11 +80,11 @@ public class DiceUIController : MonoBehaviour
 
         // BeforeRoll（範囲/偶奇）
         if (MoleculeEffectService.Instance != null)
-            MoleculeEffectService.Instance.ApplyBeforeRoll(playerMoleculeHand, ref final);
+            MoleculeEffectService.Instance.ApplyBeforeRoll(gsm.CurrentPlayer.molHand, ref final);
 
         // AfterRoll（±N/偶奇/最終範囲）
         if (MoleculeEffectService.Instance != null)
-            MoleculeEffectService.Instance.ApplyAfterRoll(playerMoleculeHand, ref final);
+            MoleculeEffectService.Instance.ApplyAfterRoll(gsm.CurrentPlayer.molHand, ref final);
 
         // ★ ここは「最初に決めたフラグ」で判定（途中でDisarmされても維持）
         if (!liftThisRoll)

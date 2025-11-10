@@ -614,60 +614,6 @@ MonoBehaviour:
   m_Spacing: {x: 5, y: 5}
   m_Constraint: 2
   m_ConstraintCount: 1
---- !u!1 &39381218
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 39381220}
-  - component: {fileID: 39381221}
-  m_Layer: 0
-  m_Name: PlayerAtom
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &39381220
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 39381218}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.10675049, y: -0.6086731, z: -0.03408403}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &39381221
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 39381218}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b5a4baf75205b59449fc0a225255ec20, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  initialCards:
-  - {fileID: 11400000, guid: b965dd12282263942b9c048b91d7b100, type: 2}
-  - {fileID: 11400000, guid: b965dd12282263942b9c048b91d7b100, type: 2}
-  - {fileID: 11400000, guid: ff4934e3b01a8294082c68e52bcc475a, type: 2}
-  - {fileID: 11400000, guid: 1469ad5a23b12ad4993b1e6ef7037353, type: 2}
-  - {fileID: 11400000, guid: a54d1ab59d083b44fab3874df81165f4, type: 2}
-  - {fileID: 11400000, guid: a54d1ab59d083b44fab3874df81165f4, type: 2}
-  autoSortOnAdd: 1
-  sortMode: 0
-  _cards: []
 --- !u!1 &117397099
 GameObject:
   m_ObjectHideFlags: 0
@@ -2206,6 +2152,7 @@ MonoBehaviour:
   diceUI: {fileID: 0}
   cameraFollow: {fileID: 0}
   HandUI: {fileID: 0}
+  MolHandUI: {fileID: 0}
   turnDelay: 0.6
   resolveDelay: 0.25
 --- !u!4 &569008026
@@ -4019,8 +3966,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7bbb141bd827df04e9bacddf8612a1d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetHand: {fileID: 39381221}
-  handUI: {fileID: 0}
+  targetHand: {fileID: 0}
+  handUI: {fileID: 2000232643}
+  gsm: {fileID: 0}
 --- !u!4 &973902605
 Transform:
   m_ObjectHideFlags: 0
@@ -5112,52 +5060,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1151408767}
   m_CullTransparentMesh: 1
---- !u!1 &1162082024
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1162082026}
-  - component: {fileID: 1162082025}
-  m_Layer: 0
-  m_Name: PlayerMol
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1162082025
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1162082024}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c1a960562a0400f45bc76a4e60b7889e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _cards:
-  - {fileID: 11400000, guid: 0e23f299d51373a418b0396dd0d222b3, type: 2}
---- !u!4 &1162082026
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1162082024}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.10675049, y: -0.6086731, z: -0.03408403}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1179375901
 GameObject:
   m_ObjectHideFlags: 0
@@ -6847,8 +6749,8 @@ MonoBehaviour:
   moleculeHandUI: {fileID: 2013212223}
   switchButton: {fileID: 565975465}
   switchButtonText: {fileID: 1886028665}
-  toMoleculeText: ToMol
-  toAtomText: ToAtom
+  toMoleculeText: "\u5206\u5B50\u3092\u8868\u793A"
+  toAtomText: "\u539F\u5B50\u3092\u8868\u793A"
   showingAtoms: 1
 --- !u!1 &1444412866
 GameObject:
@@ -7826,6 +7728,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 122281751020608587, guid: b786ef7bc46531a49a53ad1ed522a266, type: 3}
+      propertyPath: m_Name
+      value: Player1_AtomHand
+      objectReference: {fileID: 0}
+    - target: {fileID: 1679367857237007818, guid: b786ef7bc46531a49a53ad1ed522a266, type: 3}
+      propertyPath: m_Name
+      value: Player1_MolHand
+      objectReference: {fileID: 0}
     - target: {fileID: 1929790683112998193, guid: b786ef7bc46531a49a53ad1ed522a266, type: 3}
       propertyPath: m_LocalScale.x
       value: 2
@@ -7874,6 +7784,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Token
       objectReference: {fileID: 0}
+    - target: {fileID: 6237258626646600100, guid: b786ef7bc46531a49a53ad1ed522a266, type: 3}
+      propertyPath: m_Name
+      value: Player1_Hand
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -7906,6 +7820,7 @@ MonoBehaviour:
   playerName: 
   ordinalPlayerNumber: 0
   atomHand: {fileID: 0}
+  molHand: {fileID: 0}
   secondsPerTile: 0.22
   arriveEpsilon: 0.001
   stopAtGoal: 1
@@ -9684,10 +9599,9 @@ MonoBehaviour:
   rootPanel: {fileID: 196116497}
   gridRoot: {fileID: 977884057}
   cardViewPrefab: {fileID: 1486114246072187737, guid: 23c74ecda225751469fe6784069579fe, type: 3}
-  playerHand: {fileID: 39381221}
-  gsm: {fileID: 0}
+  playerHand: {fileID: 0}
   recipeDb: {fileID: 11400000, guid: e36d550d6f84a574c945614b58ecd5bd, type: 2}
-  moleculeHand: {fileID: 1162082025}
+  moleculeHand: {fileID: 0}
   synthesizeButton: {fileID: 153966674}
   synthesizeHintText: {fileID: 0}
 --- !u!1 &2008374617
@@ -9916,7 +9830,7 @@ MonoBehaviour:
   cardViewPrefab: {fileID: 2810086562500994452, guid: a088cf021050b2a499edc79e8d95def1, type: 3}
   useButton: {fileID: 11354916}
   selectedLabel: {fileID: 0}
-  moleculeHand: {fileID: 1162082025}
+  moleculeHand: {fileID: 0}
 --- !u!1 &2033367272
 GameObject:
   m_ObjectHideFlags: 0
@@ -10619,8 +10533,6 @@ SceneRoots:
   - {fileID: 569008026}
   - {fileID: 1372483794}
   - {fileID: 252223221}
-  - {fileID: 39381220}
-  - {fileID: 1162082026}
   - {fileID: 188658831}
   - {fileID: 1637045615}
   - {fileID: 1364047311}

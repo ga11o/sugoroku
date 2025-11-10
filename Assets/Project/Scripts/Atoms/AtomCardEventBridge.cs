@@ -13,9 +13,16 @@ namespace Sugoroku.Atoms
         [Tooltip("手札UI（設定されていればAdd後に自動リフレッシュ）")]
         public HandUI handUI;
 
+        public GameStateMachine gsm;
+        
+        void Start()
+        {
+            if (gsm == null) gsm = FindObjectOfType<GameStateMachine>();
+        }
+
         PlayerHand EnsureHand()
         {
-            if (!targetHand) targetHand = FindObjectOfType<PlayerHand>();
+            targetHand = gsm.CurrentPlayer.atomHand;
             if (!targetHand)
             {
                 Debug.LogWarning("[AtomCardEventBridge] targetHand が見つかりません。PlayerHand をシーンに配置/割当してください。");
