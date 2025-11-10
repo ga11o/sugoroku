@@ -11,12 +11,11 @@
 
 1. Unityをダウンロード
 
-2. 2Dプロジェクトを作成
+2. sugoroku.zipをダウンロード
 
-3. sugoroku.zipをダウンロード
+3. sugoroku.zipを展開する
 
-4. sugoroku.zipを展開して、2で作ったプロジェクトのフォルダにコピー
-    (Assets、Packages、ProjectSettingsの3つのフォルダをコピー)
+4. 3で作ったフォルダをAdd project from diskで指定する
 
 5. Unityで動作確認
 
