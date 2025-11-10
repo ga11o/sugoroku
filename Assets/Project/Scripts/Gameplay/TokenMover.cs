@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class TokenMover : MonoBehaviour
 {
@@ -162,7 +163,8 @@ public class TokenMover : MonoBehaviour
         if (currentWaypoint != null && currentWaypoint.isGoal)
         {
             Debug.Log("ゴールに到達！");
-            if (endScreen != null) endScreen.Show("ゴール！", "おめでとう 🎉");
+            // if (endScreen != null) endScreen.Show("ゴール！", "おめでとう 🎉");
+            SceneManager.LoadScene("EndSceane");
             yield break;
         }
 
