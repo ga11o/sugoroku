@@ -339,9 +339,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 11500000, guid: 41ea30292a25f9c45be64c2e2e48bf87, type: 3}
-        m_TargetAssemblyTypeName: EndScreenController, Assembly-CSharp
-        m_MethodName: 
+      - m_Target: {fileID: 1460400721}
+        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
+        m_MethodName: QuitGame
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -888,6 +888,16 @@ GameObject:
   - component: {fileID: 1460400710}
   - component: {fileID: 1460400709}
   - component: {fileID: 1460400708}
+  - component: {fileID: 1460400721}
+  - component: {fileID: 1460400720}
+  - component: {fileID: 1460400719}
+  - component: {fileID: 1460400718}
+  - component: {fileID: 1460400717}
+  - component: {fileID: 1460400716}
+  - component: {fileID: 1460400715}
+  - component: {fileID: 1460400714}
+  - component: {fileID: 1460400713}
+  - component: {fileID: 1460400712}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -978,6 +988,258 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &1460400712
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1460400707}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8e63e2e15254cb948be32936258844da, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  token: {fileID: 0}
+  dice: {fileID: 0}
+  gsm: {fileID: 0}
+  useFixedToggle: {fileID: 0}
+  fixedValueInput: {fileID: 0}
+  stepPlusBtn: {fileID: 0}
+  stepMinusBtn: {fileID: 0}
+  stateText: {fileID: 0}
+  indexText: {fileID: 0}
+  movingText: {fileID: 0}
+  diceMirrorText: {fileID: 0}
+  warpIndexInput: {fileID: 0}
+  warpButton: {fileID: 0}
+--- !u!114 &1460400713
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1460400707}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_RenderShadows: 1
+  m_RequiresDepthTextureOption: 2
+  m_RequiresOpaqueTextureOption: 2
+  m_CameraType: 0
+  m_Cameras: []
+  m_RendererIndex: -1
+  m_VolumeLayerMask:
+    serializedVersion: 2
+    m_Bits: 1
+  m_VolumeTrigger: {fileID: 0}
+  m_VolumeFrameworkUpdateModeOption: 2
+  m_RenderPostProcessing: 0
+  m_Antialiasing: 0
+  m_AntialiasingQuality: 2
+  m_StopNaN: 0
+  m_Dithering: 0
+  m_ClearDepth: 1
+  m_AllowXRRendering: 1
+  m_AllowHDROutput: 1
+  m_UseScreenCoordOverride: 0
+  m_ScreenSizeOverride: {x: 0, y: 0, z: 0, w: 0}
+  m_ScreenCoordScaleBias: {x: 0, y: 0, z: 0, w: 0}
+  m_RequiresDepthTexture: 0
+  m_RequiresColorTexture: 0
+  m_Version: 2
+  m_TaaSettings:
+    m_Quality: 3
+    m_FrameInfluence: 0.1
+    m_JitterScale: 1
+    m_MipBias: 0
+    m_VarianceClampScale: 0.9
+    m_ContrastAdaptiveSharpening: 0
+--- !u!114 &1460400714
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1460400707}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62a4e5bbd864bd343ab397f55343a893, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 0}
+  offset: {x: 0, y: 0}
+  smoothTime: 0.15
+  lookAhead: 1
+  lookAheadDistance: 0.6
+  lookAheadDamping: 0.25
+  clampToBoard: 1
+  board: {fileID: 0}
+  boundsPadding: 1
+  keepZAtMinus10: 1
+--- !u!20 &1460400715
+Camera:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1460400707}
+  m_Enabled: 0
+  serializedVersion: 2
+  m_ClearFlags: 1
+  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_projectionMatrixMode: 1
+  m_GateFitMode: 2
+  m_FOVAxisMode: 0
+  m_Iso: 200
+  m_ShutterSpeed: 0.005
+  m_Aperture: 16
+  m_FocusDistance: 10
+  m_FocalLength: 50
+  m_BladeCount: 5
+  m_Curvature: {x: 2, y: 11}
+  m_BarrelClipping: 0.25
+  m_Anamorphism: 0
+  m_SensorSize: {x: 36, y: 24}
+  m_LensShift: {x: 0, y: 0}
+  m_NormalizedViewPortRect:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 1
+    height: 1
+  near clip plane: 0.3
+  far clip plane: 1000
+  field of view: 60
+  orthographic: 0
+  orthographic size: 5
+  m_Depth: 0
+  m_CullingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_RenderingPath: -1
+  m_TargetTexture: {fileID: 0}
+  m_TargetDisplay: 0
+  m_TargetEye: 3
+  m_HDR: 1
+  m_AllowMSAA: 1
+  m_AllowDynamicResolution: 0
+  m_ForceIntoRT: 0
+  m_OcclusionCulling: 1
+  m_StereoConvergence: 10
+  m_StereoSeparation: 0.022
+--- !u!114 &1460400716
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1460400707}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e2e83398da8bc045ad391f2042c5507, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  token: {fileID: 0}
+  rollButton: {fileID: 0}
+  diceText: {fileID: 0}
+  sfxRoll: {fileID: 0}
+  rollAnimDuration: 0.6
+  rollAnimInterval: 0.06
+  gsm: {fileID: 0}
+  debugUseFixed: 0
+  debugFixedValue: 6
+  playerMoleculeHand: {fileID: 0}
+--- !u!114 &1460400717
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1460400707}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7534d43ec915fa242854d467a2173724, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  group: {fileID: 0}
+  titleText: {fileID: 0}
+  subtitleText: {fileID: 0}
+  fadeDuration: 0.25
+--- !u!114 &1460400718
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1460400707}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 60697164ffcd30f4d99ac3e4476af3ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  myToken: {fileID: 0}
+  otherToken: {fileID: 0}
+  otherTurnDelay: 0.6
+  resolveDelay: 0.25
+--- !u!114 &1460400719
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1460400707}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f55dc72b9922cde4f9126e2cda2d12ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentWaypoint: {fileID: 0}
+  gameState: {fileID: 0}
+  board: {fileID: 0}
+  endScreen: {fileID: 0}
+  secondsPerTile: 0.22
+  arriveEpsilon: 0.001
+  stopAtGoal: 1
+  currentIndex: 0
+  isMoving: 0
+  animationJump: 1
+  jumpHeight: 1.5
+  jumpFrequency: 0
+  tokenOffset: {x: 0, y: 1, z: 0}
+--- !u!114 &1460400720
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1460400707}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 84fcfabec74ec144bb5d73080405c328, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tileEvent:
+    eventType: 0
+    value: 0
+  mainNext: {fileID: 0}
+  previous: {fileID: 0}
+  branchNexts: []
+  isGoal: 0
+--- !u!114 &1460400721
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1460400707}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41ea30292a25f9c45be64c2e2e48bf87, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1575623635
 GameObject:
   m_ObjectHideFlags: 0
@@ -1063,13 +1325,13 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 11500000, guid: f55dc72b9922cde4f9126e2cda2d12ac, type: 3}
-        m_TargetAssemblyTypeName: 
-        m_MethodName: 
+      - m_Target: {fileID: 1460400721}
+        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
+        m_MethodName: RestartGame
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: 
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -1132,7 +1394,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1575623635}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 41ea30292a25f9c45be64c2e2e48bf87, type: 3}
   m_Name: 

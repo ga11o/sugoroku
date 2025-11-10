@@ -18,26 +18,27 @@ public class GameManager : MonoBehaviour
     public void RestartGame()
     {
         Debug.Log("ゲーム再スタート！");
-        // 現在のシーンを再ロードします。
-        SceneManager.LoadScene(currentSceneName); 
         
         // または、特定のメインのゲームプレイシーン名を使うこともできます。
-        // SceneManager.LoadScene("MainGameScene"); 
+        SceneManager.LoadScene("Main"); 
     }
 
-    /// <summary>
-    /// ゲームを終了させるメソッド
+/// <summary>
+    /// ゲームを終了させるメソッド（または、StartSceaneに遷移させるメソッド）
     /// </summary>
     public void QuitGame()
     {
-        Debug.Log("ゲームを終了します。");
+        Debug.Log("StartSceaneに遷移します。");
         
-        // Unityエディターで実行している場合は、Playモードを停止します。
-        #if UNITY_EDITOR
+        // StartSceaneという名前のシーンをロードします。
+        SceneManager.LoadScene("StartSceane");
+
+        // ※元々あったエディター/ビルド終了のコードは削除またはコメントアウトします。
+        /* #if UNITY_EDITOR
             UnityEditor.EditorApplication.isPlaying = false;
-        // ビルドしたアプリケーションで実行している場合は、アプリケーションを閉じます。
         #else
             Application.Quit();
         #endif
+        */
     }
 }
