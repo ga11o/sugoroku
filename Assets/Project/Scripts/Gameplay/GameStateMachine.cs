@@ -37,6 +37,7 @@ public class GameStateMachine : MonoBehaviour
         if (myToken != null) myToken.MoveCompleted += OnMyTokenMoveCompleted;
         // 最初の状態へ
         SetState(GameState.MyTurn_AwaitInput);
+        Sugoroku.UI.MessageManager.Important($"あなたのターンです。サイコロを振りましょう！");
     }
 
     // DiceUI から呼ぶ：最終出目が決まったらここへ
