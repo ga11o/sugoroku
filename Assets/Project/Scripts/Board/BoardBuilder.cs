@@ -22,7 +22,9 @@ public class BoardBuilder : MonoBehaviour
     [Header("生成先(安全)")]
     [SerializeField] Transform tilesRoot; // タイルだけ入れる親。Boardの他の子(カメラ等)は触らない
 
-    [HideInInspector] public List<Transform> waypoints = new List<Transform>();
+    //[HideInInspector] public List<Transform> waypoints = new List<Transform>();
+    [HideInInspector] public List<Waypoint> waypoints = new List<Waypoint>();
+
 
     void Awake()
     {
@@ -100,28 +102,28 @@ public class BoardBuilder : MonoBehaviour
         int rows = path.grid.GetLength(0);
         int cols = path.grid.GetLength(1);
 
-
+        // BoardBuilder.cs の盤面生成メソッド内
+        Dictionary<(int,int), Waypoint> waypointGrid = new();
 
         for (int y = 0; y < rows; y++)
         {
             for (int x = 0; x < cols; x++)
             {
                 int cell = path.grid[y, x];
+                int eventCode = cell % 100;   // 下2桁
                 if (cell == 0) continue; // 空白はスキップ
 
-                //Vector3 pos = new Vector3(x * path.tileSpacing, -y * path.tileSpacing, 0f);
                 Vector3 pos = new Vector3((x + y) * path.tileSpacing,(y - x) * path.tileSpacing * 0.5f,0f);
 
                 GameObject prefab =
-                    (cell == 2) ? tileStartPrefab :
-                    (cell == 3) ? tileGoalPrefab :
+                    (eventCode == 1) ? tileStartPrefab :
+                    (eventCode == 2) ? tileGoalPrefab :
                     tileNormalPrefab;
 
-
                 var tile = Instantiate(prefab, pos, Quaternion.identity, root);
-
                 TileEvent ev = null;
-                switch (cell)
+
+                switch (eventCode)
                 {
                     case 10: ev = new TileEvent(TileEvent.EventType.Forward, 3); break;
                     case 11: ev = new TileEvent(TileEvent.EventType.Back, 1); break;
@@ -130,91 +132,94 @@ public class BoardBuilder : MonoBehaviour
                     case 14: ev = new TileEvent(TileEvent.EventType.GoToStart); break;
                 }
 
+                // Waypoint を必ず作成
+                var wp = new GameObject($"WP_{x}_{y}").AddComponent<Waypoint>();
+                wp.tileEvent = ev; // ★ イベントを生成した後にセットする
+                wp.transform.SetParent(tile.transform, false);
+
+                // ゴールセルならフラグを立てる
+                if (eventCode == 2)
+                {
+                    wp.isGoal = true;
+                }
+
+                // イベントマスなら色を変える
                 if (ev != null)
                 {
                     var rhombus = tile.GetComponent<RhombusTile>();
                     if (rhombus != null) rhombus.ApplyColor(ev);
-
-                    // Waypoint にイベントを保持させる
-                    var wp = new GameObject($"WP_{x}_{y}").AddComponent<Waypoint>();
-                    wp.tileEvent = ev;
-                    wp.transform.SetParent(tile.transform, false);
-                    waypoints.Add(wp.transform);
-                }
-                else
-                {
-                    var wp = new GameObject($"WP_{x}_{y}").transform;
-                    wp.SetParent(tile.transform, false);
-                    waypoints.Add(wp);
                 }
 
+                // Waypointリストに追加（型を Waypoint に統一）
+                waypoints.Add(wp);
+
+                waypointGrid[(x,y)] = wp;
             }
         }
 
 
-    }
-
-    /*void BuildInternal(bool destroyImmediate)
-    {
-        if (!ErrorHandling()) return; // エラー検知
-
-        // if (path == null || path.coords == null || path.coords.Count == 0) return;
-        // if (tileNormalPrefab == null || tileStartPrefab == null || tileGoalPrefab == null) return;
-
-        var root = EnsureTilesRoot();
-
-        // 既存タイルだけをクリア（Board の他の子は触らない）
-        for (int i = root.childCount - 1; i >= 0; i--)
+        // 接続
+        foreach (var kv in waypointGrid)
         {
-            var child = root.GetChild(i).gameObject;
-#if UNITY_EDITOR
-            if (destroyImmediate) UnityEditor.Undo.DestroyObjectImmediate(child);
-            else Destroy(child);
-#else
-            Destroy(child);
-#endif
-        }
-        waypoints.Clear();
+            int x = kv.Key.Item1;
+            int y = kv.Key.Item2;
+            var wp = kv.Value;
 
-        // 生成
-        for (int i = 0; i < path.coords.Count; i++)
-        {
-            var g = path.coords[i];
-            // 置き換え：常に 0.5 を使う
-            //Vector3 pos = new Vector3(g.x * 5f + g.y * 5f, g.y * 2.5f - g.x * 2.5f, 0f);
-            Vector3 pos = new Vector3( (g.x + g.y) * path.tileSpacing,(g.y - g.x) * path.tileSpacing * 0.5f,0f);
+            int cell = path.grid[y, x];
+            int eventCode = cell % 100;   // 下2桁
+            int dirCode   = cell / 100;   // 上の桁
 
-
-            GameObject prefab =
-                (i == 0) ? tileStartPrefab :
-                (i == path.coords.Count - 1) ? tileGoalPrefab :
-                tileNormalPrefab;
-
-            var tile = Instantiate(prefab, pos, Quaternion.identity, root);
-
-            // イベント列からイベントを参照
-            var ev = path.events[(i % path.events.Count)];
-
-            var rhombus = tile.GetComponent<RhombusTile>();
-            if (i != 0 && i != path.coords.Count -1) rhombus.ApplyColor(ev);
-
-            if (rotateDiamond)
+            switch (dirCode)
             {
-                var e = tile.transform.eulerAngles;
-                e.z = 45f;
-                tile.transform.eulerAngles = e;
+                case 3: // 本道＝右
+                    if (waypointGrid.TryGetValue((x+1,y), out var right))
+                    {
+                        wp.mainNext = right;
+                        right.previous = wp;
+                    }
+                    break;
+
+                case 4: // 本道＝左
+                    if (waypointGrid.TryGetValue((x-1,y), out var left))
+                    {
+                        wp.mainNext = left;
+                        left.previous = wp;
+                    }
+                    break;
+
+                case 5: // 本道＝上
+                    if (waypointGrid.TryGetValue((x,y-1), out var up))
+                    {
+                        wp.mainNext = up;
+                        up.previous = wp;
+                    }
+                    break;
+
+                case 6: // 本道＝下
+                    if (waypointGrid.TryGetValue((x,y+1), out var down))
+                    {
+                        wp.mainNext = down;
+                        down.previous = wp;
+                    }
+                    break;
+
             }
 
-            var wp = new GameObject($"WP_{i}").transform;
-            wp.SetParent(tile.transform, false);
-            waypoints.Add(wp);
+            // 分岐開始セルなら分岐候補を追加
+            if (eventCode == 15)
+            {
+                if (waypointGrid.TryGetValue((x,y+1), out var branchDown)) wp.branchNexts.Add(branchDown);
+                if (waypointGrid.TryGetValue((x-1,y), out var branchLeft)) wp.branchNexts.Add(branchLeft);
+                if (waypointGrid.TryGetValue((x,y-1), out var branchUp))   wp.branchNexts.Add(branchUp);
+                if (waypointGrid.TryGetValue((x+1,y), out var branchRight)) wp.branchNexts.Add(branchRight);
+            }        
         }
-    }*/
+    }
 
     public Vector3 GetPoint(int index)
     {
         index = Mathf.Clamp(index, 0, waypoints.Count - 1);
-        return waypoints[index].position;
+        return waypoints[index].transform.position;
     }
 
     // 例外処理 エラー検知
@@ -224,10 +229,8 @@ public class BoardBuilder : MonoBehaviour
         {
             bool ok = true;
 
-            //if (path == null || path.coords == null || path.coords.Count == 0)
             if (path == null || path.grid == null || path.grid.GetLength(0) == 0 || path.grid.GetLength(1) == 0)
 
-            //if (path == null || path.grid == null || path.grid.Count == 0)
             {
                 Debug.LogWarning($"{nameof(BoardBuilder)}: Path が未設定または空です。生成を中止します。", this);
                 ok = false;
