@@ -2037,16 +2037,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e63e2e15254cb948be32936258844da, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  token: {fileID: 1637045617}
   dice: {fileID: 1881631047}
   gsm: {fileID: 569008025}
   useFixedToggle: {fileID: 1010882356}
   fixedValueInput: {fileID: 1688432247}
   stepPlusBtn: {fileID: 699606050}
   stepMinusBtn: {fileID: 129433631}
-  stateText: {fileID: 1771289372}
-  indexText: {fileID: 664279595}
-  movingText: {fileID: 1788709815}
+  stateText: {fileID: 1788709815}
+  turnText: {fileID: 664279595}
+  nameText: {fileID: 1771289372}
+  indexText: {fileID: 1085789059}
   diceMirrorText: {fileID: 1444412868}
   warpIndexInput: {fileID: 7050790}
   warpButton: {fileID: 2105146313}
@@ -2200,9 +2200,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60697164ffcd30f4d99ac3e4476af3ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  myToken: {fileID: 1637045617}
-  otherToken: {fileID: 0}
-  otherTurnDelay: 0.6
+  players: []
+  currentTurn: 0
+  playerOrder: 00000000030000000100000002000000
+  diceUI: {fileID: 0}
+  cameraFollow: {fileID: 0}
+  HandUI: {fileID: 0}
+  turnDelay: 0.6
   resolveDelay: 0.25
 --- !u!4 &569008026
 Transform:
@@ -2488,7 +2492,7 @@ GameObject:
   - component: {fileID: 664279596}
   - component: {fileID: 664279595}
   m_Layer: 5
-  m_Name: IndexText
+  m_Name: TurnText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2701,7 +2705,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e63e2e15254cb948be32936258844da, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  token: {fileID: 1637045617}
   dice: {fileID: 1881631047}
   gsm: {fileID: 569008025}
   useFixedToggle: {fileID: 1605841907}
@@ -2709,8 +2712,9 @@ MonoBehaviour:
   stepPlusBtn: {fileID: 3480787}
   stepMinusBtn: {fileID: 592120511}
   stateText: {fileID: 0}
+  turnText: {fileID: 0}
+  nameText: {fileID: 0}
   indexText: {fileID: 0}
-  movingText: {fileID: 0}
   diceMirrorText: {fileID: 0}
   warpIndexInput: {fileID: 0}
   warpButton: {fileID: 0}
@@ -4646,7 +4650,7 @@ GameObject:
   - component: {fileID: 1085789060}
   - component: {fileID: 1085789059}
   m_Layer: 5
-  m_Name: DiceText
+  m_Name: IndexText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7896,9 +7900,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentWaypoint: {fileID: 0}
-  gameState: {fileID: 0}
   board: {fileID: 211821751}
+  gsm: {fileID: 0}
   endScreen: {fileID: 1768530957}
+  playerName: 
+  ordinalPlayerNumber: 0
+  atomHand: {fileID: 0}
   secondsPerTile: 0.22
   arriveEpsilon: 0.001
   stopAtGoal: 1
@@ -7907,7 +7914,7 @@ MonoBehaviour:
   animationJump: 1
   jumpHeight: 1.5
   jumpFrequency: 0
-  tokenOffset: {x: 0, y: 1, z: 0}
+  tokenOffset: {x: 0, y: 1, z: -3}
 --- !u!4 &1637045619 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1929790683112998193, guid: b786ef7bc46531a49a53ad1ed522a266, type: 3}
@@ -8852,7 +8859,7 @@ GameObject:
   - component: {fileID: 1771289373}
   - component: {fileID: 1771289372}
   m_Layer: 5
-  m_Name: StateText
+  m_Name: NameText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8988,7 +8995,7 @@ GameObject:
   - component: {fileID: 1788709816}
   - component: {fileID: 1788709815}
   m_Layer: 5
-  m_Name: MovingText
+  m_Name: StateText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9161,7 +9168,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e2e83398da8bc045ad391f2042c5507, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  token: {fileID: 1637045617}
   rollButton: {fileID: 489804385}
   diceText: {fileID: 1743039545}
   sfxRoll: {fileID: 2086131898}
@@ -9679,6 +9685,7 @@ MonoBehaviour:
   gridRoot: {fileID: 977884057}
   cardViewPrefab: {fileID: 1486114246072187737, guid: 23c74ecda225751469fe6784069579fe, type: 3}
   playerHand: {fileID: 39381221}
+  gsm: {fileID: 0}
   recipeDb: {fileID: 11400000, guid: e36d550d6f84a574c945614b58ecd5bd, type: 2}
   moleculeHand: {fileID: 1162082025}
   synthesizeButton: {fileID: 153966674}
