@@ -995,12 +995,11 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1460400707}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8e63e2e15254cb948be32936258844da, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  token: {fileID: 0}
   dice: {fileID: 0}
   gsm: {fileID: 0}
   useFixedToggle: {fileID: 0}
@@ -1008,8 +1007,9 @@ MonoBehaviour:
   stepPlusBtn: {fileID: 0}
   stepMinusBtn: {fileID: 0}
   stateText: {fileID: 0}
+  turnText: {fileID: 0}
+  nameText: {fileID: 0}
   indexText: {fileID: 0}
-  movingText: {fileID: 0}
   diceMirrorText: {fileID: 0}
   warpIndexInput: {fileID: 0}
   warpButton: {fileID: 0}
@@ -1020,7 +1020,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1460400707}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
   m_Name: 
@@ -1064,7 +1064,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1460400707}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 62a4e5bbd864bd343ab397f55343a893, type: 3}
   m_Name: 
@@ -1137,12 +1137,11 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1460400707}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2e2e83398da8bc045ad391f2042c5507, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  token: {fileID: 0}
   rollButton: {fileID: 0}
   diceText: {fileID: 0}
   sfxRoll: {fileID: 0}
@@ -1175,14 +1174,18 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1460400707}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 60697164ffcd30f4d99ac3e4476af3ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  myToken: {fileID: 0}
-  otherToken: {fileID: 0}
-  otherTurnDelay: 0.6
+  players: []
+  currentTurn: 0
+  playerOrder: 00000000030000000100000002000000
+  diceUI: {fileID: 0}
+  cameraFollow: {fileID: 0}
+  HandUI: {fileID: 0}
+  turnDelay: 0.6
   resolveDelay: 0.25
 --- !u!114 &1460400719
 MonoBehaviour:
@@ -1191,15 +1194,18 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1460400707}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f55dc72b9922cde4f9126e2cda2d12ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   currentWaypoint: {fileID: 0}
-  gameState: {fileID: 0}
   board: {fileID: 0}
+  gsm: {fileID: 0}
   endScreen: {fileID: 0}
+  playerName: 
+  ordinalPlayerNumber: 0
+  atomHand: {fileID: 0}
   secondsPerTile: 0.22
   arriveEpsilon: 0.001
   stopAtGoal: 1
@@ -1216,7 +1222,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1460400707}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 84fcfabec74ec144bb5d73080405c328, type: 3}
   m_Name: 
