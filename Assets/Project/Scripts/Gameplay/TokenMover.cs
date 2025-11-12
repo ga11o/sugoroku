@@ -13,7 +13,7 @@ public class TokenMover : MonoBehaviour
     [Header("参照")]
     public BoardBuilder board;
     public GameStateMachine gsm;
-    public EndScreenController endScreen;
+    // public EndScreenController endScreen;
 
     [Header("プレイヤー情報")]
     public string playerName;
