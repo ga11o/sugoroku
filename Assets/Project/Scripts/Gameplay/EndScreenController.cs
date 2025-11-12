@@ -1,6 +1,6 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.SceneManagement;
+// using UnityEngine.SceneManagement;
 using TMPro;
 
 public class EndScreenController : MonoBehaviour
@@ -65,20 +65,5 @@ public class EndScreenController : MonoBehaviour
         group.alpha = 0f;
         group.interactable = false;
         group.blocksRaycasts = false;
-    }
-
-    public void Restart()
-    {
-        Time.timeScale = 1f;
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-    }
-
-    public void Quit()
-    {
-#if UNITY_EDITOR
-        UnityEditor.EditorApplication.isPlaying = false;
-#else
-        Application.Quit();
-#endif
     }
 }
