@@ -9,7 +9,6 @@ using Sugoroku.Atoms;
 public class DiceUIController : MonoBehaviour
 {
     [Header("参照")]
-    public TokenMover token;      // 駒
     public Button rollButton;     // サイコロボタン
     public TMP_Text diceText;     // 出目表示
     public AudioSource sfxRoll;   // 任意（サイコロ音）
@@ -32,7 +31,6 @@ public class DiceUIController : MonoBehaviour
 
     void Awake()
     {
-        if (token == null) token = FindObjectOfType<TokenMover>();
         if (gsm   == null) gsm   = FindObjectOfType<GameStateMachine>();
         if (playerMoleculeHand == null) playerMoleculeHand = FindObjectOfType<PlayerMoleculeHand>(true);
 
@@ -45,7 +43,7 @@ public class DiceUIController : MonoBehaviour
     void Update()
     {
         if (rollButton == null) return;
-        bool canRoll = gsm ? gsm.CanRoll() : (token != null && !token.isMoving);
+        bool canRoll = gsm ? gsm.CanRoll() : false;
         rollButton.interactable = !rolling && canRoll;
     }
 
@@ -53,7 +51,7 @@ public class DiceUIController : MonoBehaviour
     {
         if (rolling) return;
         if (gsm != null && !gsm.CanRoll()) return;
-        if (gsm == null && (token == null || token.isMoving)) return;
+        if (gsm == null) return;
 
         StartCoroutine(RollRoutine());
     }
@@ -100,11 +98,10 @@ public class DiceUIController : MonoBehaviour
         Sugoroku.UI.MessageManager.Important($"サイコロの出目は {final} です！");
         
         // ステートマシン経由 or 直接移動
-        bool accepted = gsm ? gsm.OnDiceFinal(final)
-                            : (token != null && token.MoveBy(final));
+        bool accepted = gsm ? gsm.OnDiceFinal(final) : false;
         if (!accepted) { rolling = false; yield break; }
 
-        while (token != null && token.isMoving) yield return null;
+        while (gsm.CurrentPlayer != null && gsm.CurrentPlayer.isMoving) yield return null;
 
         rolling = false;
         if (rollButton) rollButton.interactable = true;
