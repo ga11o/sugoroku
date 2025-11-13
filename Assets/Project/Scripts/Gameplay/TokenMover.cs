@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Sugoroku.Atoms;
 
 public class TokenMover : MonoBehaviour
@@ -12,7 +13,7 @@ public class TokenMover : MonoBehaviour
     [Header("参照")]
     public BoardBuilder board;
     public GameStateMachine gsm;
-    public EndScreenController endScreen;
+    // public EndScreenController endScreen;
 
     [Header("プレイヤー情報")]
     public string playerName;
@@ -162,7 +163,7 @@ public class TokenMover : MonoBehaviour
         if (currentWaypoint != null && currentWaypoint.isGoal)
         {
             Debug.Log("ゴールに到達！");
-            if (endScreen != null) endScreen.Show("ゴール！", "おめでとう 🎉");
+            SceneManager.LoadScene("EndSceane");
             yield break;
         }
 
