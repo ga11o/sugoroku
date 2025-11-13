@@ -181,21 +181,26 @@ public class GameStateMachine : MonoBehaviour
                 break;
             case TileEvent.EventType.Forward:
                 // 指定マス進む
+                Sugoroku.UI.MessageManager.Important($"{tile.value}進む！");
                 yield return CurrentPlayer.MoveStepsEvent(tile.value);
                 break;
             case TileEvent.EventType.Back:
+                Sugoroku.UI.MessageManager.Important($"{tile.value}戻る…");
                 yield return CurrentPlayer.MoveStepsSignedEvent(-tile.value);
                 break;
             case TileEvent.EventType.ExtraTurn:
                 // もう一度サイコロを振れる
+                Sugoroku.UI.MessageManager.Important($"もう1回！");
                 CurrentPlayer.ExtraTurn = true;
                 break;
             case TileEvent.EventType.SkipNext:
                 // 一回休み
+                Sugoroku.UI.MessageManager.Important($"1回休み…");
                 CurrentPlayer.SkipTurn = true;
                 break;
             case TileEvent.EventType.GoToStart:
-                // スタートに戻る
+                // スタートに戻る 
+                Sugoroku.UI.MessageManager.Important($"振り出しに戻る…");
                 yield return CurrentPlayer.GoToStart();
                 break;
         }
