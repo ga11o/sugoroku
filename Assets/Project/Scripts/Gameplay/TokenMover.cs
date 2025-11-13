@@ -20,6 +20,7 @@ public class TokenMover : MonoBehaviour
     public int ordinalPlayerNumber; // プレイヤー番号(何番目に行動するか、0始まり)
     public bool isCPU {get; set;} = false;
     public PlayerHand atomHand; // 原子カード手札
+    public PlayerMoleculeHand molHand; // 分子カード手札
 
     [Header("移動設定")]
     public float secondsPerTile = 0.22f;

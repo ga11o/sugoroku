@@ -25,6 +25,7 @@ public class GameStateMachine : MonoBehaviour
     public DiceUIController diceUI; // DiceUI への参照
     public CameraFollow2D cameraFollow; // カメラ制御への参照
     public HandUI HandUI; // 手札UI への参照
+    public MoleculeHandUI MolHandUI ; // 分子手札UI への参照
 
 
     [Header("調整")]
@@ -43,6 +44,11 @@ public class GameStateMachine : MonoBehaviour
             players[0].MoveCompleted += OnMoveCompleted;
             players[0].ordinalPlayerNumber = 0;
             players[0].playerName = "Player1";
+
+            players[0].atomHand = FindObjectOfType<PlayerHand>();
+            players[0].atomHand.transform.SetParent(players[0].transform);
+            players[0].molHand = FindObjectOfType<PlayerMoleculeHand>();
+            players[0].molHand.transform.SetParent(players[0].transform);
         }
         for (int i = 1; i < playerCount; i++){
             var Obj = Instantiate(players[0].gameObject, players[0].transform.parent);
@@ -50,6 +56,9 @@ public class GameStateMachine : MonoBehaviour
             Token.board = players[0].board; // 同じ盤面を使う
             Token.playerName = "Player" + (i + 1);
             Token.ordinalPlayerNumber = i;
+
+            Token.atomHand.name = Token.playerName + "_AtomHand";
+            Token.molHand.name = Token.playerName + "_MolHand";
 
             var renderer = Token.GetComponentInChildren<Renderer>();
             if (renderer != null) renderer.material.color = new Color(0.3f*i, 0.3f*i, 0.3f*i); // 色を変えるなど区別(適当)
@@ -60,6 +69,13 @@ public class GameStateMachine : MonoBehaviour
         if(diceUI == null) diceUI = FindObjectOfType<DiceUIController>();
         if(cameraFollow == null) cameraFollow = FindObjectOfType<CameraFollow2D>();
         if(HandUI == null) HandUI = FindObjectOfType<HandUI>();
+        if(MolHandUI == null) MolHandUI = FindObjectOfType<MoleculeHandUI>();
+
+        HandUI.playerHand = CurrentPlayer.atomHand; // 最初のプレイヤーの手札をセット
+        HandUI.moleculeHand = CurrentPlayer.molHand; // 最初のプレイヤーの分子手札をセット
+        MolHandUI.moleculeHand = CurrentPlayer.molHand; // 最初のプレイヤーの分子手札をセット
+        HandUI.Refresh();
+        MolHandUI.Refresh();
         // 最初の状態へ
         SetState(GameState.Turn_AwaitInput);
     }
@@ -126,7 +142,11 @@ public class GameStateMachine : MonoBehaviour
         }
 
         // だれだれのターンみたいなメッセージを出すなど
-        HandUI.Refresh(); // 手札UI更新
+        HandUI.playerHand = CurrentPlayer.atomHand; // 次のプレイヤーの手札をセット
+        HandUI.moleculeHand = CurrentPlayer.molHand; // 次のプレイヤーの分子手札をセット
+        MolHandUI.moleculeHand = CurrentPlayer.molHand; // 次のプレイヤーの分子手札をセット
+        HandUI.Refresh();
+        MolHandUI.Refresh();
         SetState(GameState.Turn_AwaitInput);
     }
 

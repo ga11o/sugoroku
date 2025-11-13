@@ -18,8 +18,8 @@ namespace Sugoroku.Atoms
         [Header("Switch Button")]
         public Button switchButton;
         public TMP_Text switchButtonText;
-        public string toMoleculeText = "分子を表示";
-        public string toAtomText     = "原子を表示";
+        public string toMoleculeText;
+        public string toAtomText;
 
         // 現在どちらを表示対象にするか（表示中とは限らない）
         public bool showingAtoms = true;

@@ -16,7 +16,6 @@ namespace Sugoroku.Atoms
         public Transform gridRoot;             // GridLayoutGroup の Transform
         public AtomCardView cardViewPrefab;    // 1枚分カードUIプレハブ
         public PlayerHand playerHand;          // 原子の所持
-        public GameStateMachine gsm; // (拡張用)現在のプレイヤーは、 GameStateMachine から取得する必要がある
 
         [Header("Synthesis (任意)")]
         public MoleculeRecipeDatabase recipeDb;
