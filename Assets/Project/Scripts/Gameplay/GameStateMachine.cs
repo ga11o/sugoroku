@@ -16,8 +16,14 @@ public class GameStateMachine : MonoBehaviour
         End                  // 終了
     }
 
+
+
     [Header("参照")]
     public TokenMover myToken;           // 自分の駒（今は1人想定）
+
+    public QuizManager quizManager;
+
+
     [Tooltip("将来AIや他プレイヤーの駒を使うならここに追加する")]
     public TokenMover otherToken;        // 任意/今は未使用
 
@@ -35,6 +41,7 @@ public class GameStateMachine : MonoBehaviour
     {
         if (myToken == null) myToken = FindObjectOfType<TokenMover>();
         if (myToken != null) myToken.MoveCompleted += OnMyTokenMoveCompleted;
+        if (quizManager == null) quizManager = FindAnyObjectByType<QuizManager>();
         // 最初の状態へ
         SetState(GameState.MyTurn_AwaitInput);
     }
@@ -91,8 +98,6 @@ public class GameStateMachine : MonoBehaviour
             }
         }
 
-      
-
 
         // 今はダミーとして「相手のターン」を少しだけ挟む
         SetState(GameState.OtherTurn);
@@ -148,35 +153,22 @@ public class GameStateMachine : MonoBehaviour
                 yield return myToken.GoToStart();
                 break;
             case TileEvent.EventType.Quiz:
-                // ミニゲーム（クイズ）を表示。正解なら1マス進む
-                Debug.Log("ExecuteTileEvent: Quiz event triggered");
-                bool answeredCorrect = false;
+                // ミニゲーム（クイズ）を表示。
+                quizManager.ShowQuizUI();
+                // プレイヤーの入力を待つ（無制限で待つ）。必要ならタイムアウトを秒数で指定できます。
+                yield return StartCoroutine(quizManager.WaitForAnswerRoutine());
 
-                MinigameQuizManager manager = FindObjectOfType<MinigameQuizManager>();
-                if (manager == null)
+                // 正解処理
+                if (quizManager.CorrectAnswer)
                 {
-                    // Create a manager if none exists. This may create one even if a disabled instance exists; that's uncommon.
-                    Debug.Log("MinigameQuizManager instance not found; creating one.");
-                    var go = new GameObject("MinigameQuizManager");
-                    manager = go.AddComponent<MinigameQuizManager>();
-                    // wait one frame for Awake to run
-                    yield return null;
-                }
-
-                if (manager != null)
-                {
-                    // Ask the question and wait for result
-                    yield return manager.AskRandomQuestionRoutine((ok) => { answeredCorrect = ok; });
-                }
-                else
-                {
-                    Debug.LogWarning("MinigameQuizManager not found; skipping quiz event.");
-                }
-                
-                //正解処理
-                if (answeredCorrect)
-                {
+                    Debug.Log("Quiz Correct Answer!");
+                    // 正解なら1マス進む
                     yield return myToken.MoveStepsEvent(1);
+                }
+                // 不正解処理
+                else if (quizManager.WrongAnswer)
+                {
+                    Debug.Log("Quiz Wrong Answer!");
                 }
                 break;
         }
