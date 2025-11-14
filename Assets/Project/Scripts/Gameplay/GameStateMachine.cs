@@ -74,6 +74,7 @@ public class GameStateMachine : MonoBehaviour
         HandUI.playerHand = CurrentPlayer.atomHand; // 最初のプレイヤーの手札をセット
         HandUI.moleculeHand = CurrentPlayer.molHand; // 最初のプレイヤーの分子手札をセット
         MolHandUI.moleculeHand = CurrentPlayer.molHand; // 最初のプレイヤーの分子手札をセット
+        Sugoroku.UI.MessageManager.Important($"{CurrentPlayer.playerName} のターンです！");
         HandUI.Refresh();
         MolHandUI.Refresh();
         // 最初の状態へ
@@ -145,6 +146,7 @@ public class GameStateMachine : MonoBehaviour
         HandUI.playerHand = CurrentPlayer.atomHand; // 次のプレイヤーの手札をセット
         HandUI.moleculeHand = CurrentPlayer.molHand; // 次のプレイヤーの分子手札をセット
         MolHandUI.moleculeHand = CurrentPlayer.molHand; // 次のプレイヤーの分子手札をセット
+        Sugoroku.UI.MessageManager.Important($"{CurrentPlayer.playerName} のターンです！");
         HandUI.Refresh();
         MolHandUI.Refresh();
         SetState(GameState.Turn_AwaitInput);
@@ -160,7 +162,6 @@ public class GameStateMachine : MonoBehaviour
         // 必要ならここで UI の有効/無効を切り替える
         if (State == GameState.Turn_AwaitInput)
         {
-            Sugoroku.UI.MessageManager.Important($"{CurrentPlayer.playerName} のターンです！");
             // カメラを現在のプレイヤーに追従させる
             if (cameraFollow != null && CurrentPlayer != null)
             {
