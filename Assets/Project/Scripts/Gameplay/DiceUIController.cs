@@ -17,7 +17,7 @@ public class DiceUIController : MonoBehaviour
     public float rollAnimDuration = 0.6f;
     public float rollAnimInterval = 0.06f;
 
-[Header("サイコロ見た目")]
+    [Header("サイコロ見た目")]
     public Image diceImage;      // サイコロの絵を出す Image
     public Sprite[] diceFaces;   // 1〜6 のサイコロ画像（要素数 6）
 
