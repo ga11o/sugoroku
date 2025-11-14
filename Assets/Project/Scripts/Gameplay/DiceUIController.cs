@@ -17,6 +17,10 @@ public class DiceUIController : MonoBehaviour
     public float rollAnimDuration = 0.6f;
     public float rollAnimInterval = 0.06f;
 
+[Header("サイコロ見た目")]
+    public Image diceImage;      // サイコロの絵を出す Image
+    public Sprite[] diceFaces;   // 1〜6 のサイコロ画像（要素数 6）
+
     bool rolling;
 
     [Header("ステートマシン")]
@@ -52,6 +56,22 @@ public class DiceUIController : MonoBehaviour
         StartCoroutine(RollRoutine());
     }
 
+// ★ 数字と画像をまとめて更新する共通メソッド
+    void UpdateDiceVisual(int value)
+    {
+        // テキスト
+        if (diceText != null)
+        {
+            diceText.text = value.ToString();
+        }
+
+        // 画像（1〜6の範囲だけ）
+        if (diceImage != null && diceFaces != null &&
+            value >= 1 && value <= diceFaces.Length)
+        {
+            diceImage.sprite = diceFaces[value - 1];
+        }
+    }
     IEnumerator RollRoutine()
     {
         rolling = true;
@@ -66,9 +86,10 @@ public class DiceUIController : MonoBehaviour
         {
             t += Time.unscaledDeltaTime;
             shown = Random.Range(1, 7);
-            if (diceText) diceText.text = shown.ToString();
+            UpdateDiceVisual(shown);
             yield return new WaitForSecondsRealtime(rollAnimInterval);
         }
+
 
         // --- 最終出目確定（効果フック） ---
         int final = debugUseFixed ? Mathf.Clamp(debugFixedValue, 1, 6)
@@ -90,8 +111,9 @@ public class DiceUIController : MonoBehaviour
         if (!liftThisRoll)
             final = Mathf.Clamp(final, 1, 6);
 
-        if (diceText) diceText.text = final.ToString();
+        UpdateDiceVisual(final);
         Sugoroku.UI.MessageManager.Important($"サイコロの出目は {final} です！");
+
         
         // ステートマシン経由 or 直接移動
         bool accepted = gsm ? gsm.OnDiceFinal(final) : false;
