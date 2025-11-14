@@ -74,6 +74,7 @@ public class GameStateMachine : MonoBehaviour
         HandUI.playerHand = CurrentPlayer.atomHand; // 最初のプレイヤーの手札をセット
         HandUI.moleculeHand = CurrentPlayer.molHand; // 最初のプレイヤーの分子手札をセット
         MolHandUI.moleculeHand = CurrentPlayer.molHand; // 最初のプレイヤーの分子手札をセット
+        Sugoroku.UI.MessageManager.Important($"{CurrentPlayer.playerName} のターンです！");
         HandUI.Refresh();
         MolHandUI.Refresh();
         // 最初の状態へ
@@ -145,6 +146,7 @@ public class GameStateMachine : MonoBehaviour
         HandUI.playerHand = CurrentPlayer.atomHand; // 次のプレイヤーの手札をセット
         HandUI.moleculeHand = CurrentPlayer.molHand; // 次のプレイヤーの分子手札をセット
         MolHandUI.moleculeHand = CurrentPlayer.molHand; // 次のプレイヤーの分子手札をセット
+        Sugoroku.UI.MessageManager.Important($"{CurrentPlayer.playerName} のターンです！");
         HandUI.Refresh();
         MolHandUI.Refresh();
         SetState(GameState.Turn_AwaitInput);
@@ -160,7 +162,6 @@ public class GameStateMachine : MonoBehaviour
         // 必要ならここで UI の有効/無効を切り替える
         if (State == GameState.Turn_AwaitInput)
         {
-            Sugoroku.UI.MessageManager.Important($"{CurrentPlayer.playerName} のターンです！");
             // カメラを現在のプレイヤーに追従させる
             if (cameraFollow != null && CurrentPlayer != null)
             {
@@ -181,21 +182,26 @@ public class GameStateMachine : MonoBehaviour
                 break;
             case TileEvent.EventType.Forward:
                 // 指定マス進む
+                Sugoroku.UI.MessageManager.Important($"{tile.value}進む！");
                 yield return CurrentPlayer.MoveStepsEvent(tile.value);
                 break;
             case TileEvent.EventType.Back:
+                Sugoroku.UI.MessageManager.Important($"{tile.value}戻る…");
                 yield return CurrentPlayer.MoveStepsSignedEvent(-tile.value);
                 break;
             case TileEvent.EventType.ExtraTurn:
                 // もう一度サイコロを振れる
+                Sugoroku.UI.MessageManager.Important($"もう1回！");
                 CurrentPlayer.ExtraTurn = true;
                 break;
             case TileEvent.EventType.SkipNext:
                 // 一回休み
+                Sugoroku.UI.MessageManager.Important($"1回休み…");
                 CurrentPlayer.SkipTurn = true;
                 break;
             case TileEvent.EventType.GoToStart:
-                // スタートに戻る
+                // スタートに戻る 
+                Sugoroku.UI.MessageManager.Important($"振り出しに戻る…");
                 yield return CurrentPlayer.GoToStart();
                 break;
         }
