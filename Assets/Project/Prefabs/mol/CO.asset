@@ -10,16 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f3e317b6d3167fe4aa880ddf48d5b84e, type: 3}
-  m_Name: CO2
+  m_Name: CO
   m_EditorClassIdentifier: 
-  nameJP: "\u4E8C\u9178\u5316\u70AD\u7D20"
+  nameJP: "\u4E00\u9178\u5316\u70AD\u7D20"
   formula: CO2
-  cardSprite: {fileID: 21300000, guid: 8cd09bd9d0606254f92b04539f30da48, type: 3}
+  cardSprite: {fileID: -3805423110146003313, guid: 6c3446d2a472a7549a0337ab48f9ed75, type: 3}
   effects:
   - trigger: 0
     kind: 0
-    min: 1
-    max: 3
+    min: 0
+    max: 1
     parity: 0
     consumeOnUse: 1
     turns: 0
