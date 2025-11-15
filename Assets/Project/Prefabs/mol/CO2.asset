@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f3e317b6d3167fe4aa880ddf48d5b84e, type: 3}
+  m_Name: CO2
+  m_EditorClassIdentifier: 
+  nameJP: "\u4E8C\u9178\u5316\u70AD\u7D20"
+  formula: CO2
+  cardSprite: {fileID: -3805423110146003313, guid: 6c3446d2a472a7549a0337ab48f9ed75, type: 3}
+  effects:
+  - trigger: 0
+    kind: 0
+    min: 1
+    max: 3
+    parity: 0
+    consumeOnUse: 1
+    turns: 0
+    liftDiceLimit: 1

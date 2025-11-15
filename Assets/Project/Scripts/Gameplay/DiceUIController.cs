@@ -3,12 +3,14 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
+// 分子手札＆効果サービス
+using Sugoroku.Atoms;
+
 public class DiceUIController : MonoBehaviour
 {
     [Header("参照")]
-    public TokenMover token;      // 駒（保険として保持。無くてもOK）
     public Button rollButton;     // サイコロボタン
-    public TMP_Text diceText;     // 出目表示（TMP推奨）
+    public TMP_Text diceText;     // 出目表示
     public AudioSource sfxRoll;   // 任意（サイコロ音）
 
     [Header("アニメ設定")]
@@ -18,7 +20,7 @@ public class DiceUIController : MonoBehaviour
     bool rolling;
 
     [Header("ステートマシン")]
-    public GameStateMachine gsm;  // ← ステート管理と連携
+    public GameStateMachine gsm;
 
     [Header("デバッグ")]
     public bool debugUseFixed = false;
@@ -26,31 +28,26 @@ public class DiceUIController : MonoBehaviour
 
     void Awake()
     {
-        if (token == null) token = FindObjectOfType<TokenMover>();
         if (gsm   == null) gsm   = FindObjectOfType<GameStateMachine>();
 
         if (rollButton != null)
             rollButton.onClick.AddListener(OnClickRoll);
 
-        if (diceText != null) diceText.text = "—"; // 初期表示
+        if (diceText != null) diceText.text = "—";
     }
 
     void Update()
     {
         if (rollButton == null) return;
-
-        // 自分のターン＆移動中でない時だけ押せる
-        bool canRoll = gsm ? gsm.CanRoll() : (token != null && !token.isMoving);
+        bool canRoll = gsm ? gsm.CanRoll() : false;
         rollButton.interactable = !rolling && canRoll;
     }
 
-    // Button の OnClick からも割り当て可能に public に
     public void OnClickRoll()
     {
-        // 押してよい状態かを最終確認（ステートマシン基準）
         if (rolling) return;
         if (gsm != null && !gsm.CanRoll()) return;
-        if (gsm == null && (token == null || token.isMoving)) return;
+        if (gsm == null) return;
 
         StartCoroutine(RollRoutine());
     }
@@ -59,13 +56,12 @@ public class DiceUIController : MonoBehaviour
     {
         rolling = true;
         if (rollButton) rollButton.interactable = false;
-
         if (sfxRoll) sfxRoll.Play();
 
         float t = 0f;
         int shown = 1;
 
-        // クルクル表示
+        // 演出
         while (t < rollAnimDuration)
         {
             t += Time.unscaledDeltaTime;
@@ -74,19 +70,34 @@ public class DiceUIController : MonoBehaviour
             yield return new WaitForSecondsRealtime(rollAnimInterval);
         }
 
-        // 最終出目
-        // 最終出目を決定（ここだけ置換）
+        // --- 最終出目確定（効果フック） ---
         int final = debugUseFixed ? Mathf.Clamp(debugFixedValue, 1, 6)
-                                : Random.Range(1, 7);
-        if (diceText) diceText.text = final.ToString();
+                          : Random.Range(1, 7);
 
-        // ★ ステートマシン経由（導入済みであれば）
-        bool accepted = gsm ? gsm.OnDiceFinal(final)
-                            : (token != null && token.MoveBy(final));
+        // ★ ここで「このロール中は制限解除か？」を先に保持
+        bool liftThisRoll = MoleculeEffectService.Instance &&
+                            MoleculeEffectService.Instance.ShouldLiftDiceLimit();
+
+        // BeforeRoll（範囲/偶奇）
+        if (MoleculeEffectService.Instance != null)
+            MoleculeEffectService.Instance.ApplyBeforeRoll(gsm.CurrentPlayer.molHand, ref final);
+
+        // AfterRoll（±N/偶奇/最終範囲）
+        if (MoleculeEffectService.Instance != null)
+            MoleculeEffectService.Instance.ApplyAfterRoll(gsm.CurrentPlayer.molHand, ref final);
+
+        // ★ ここは「最初に決めたフラグ」で判定（途中でDisarmされても維持）
+        if (!liftThisRoll)
+            final = Mathf.Clamp(final, 1, 6);
+
+        if (diceText) diceText.text = final.ToString();
+        Sugoroku.UI.MessageManager.Important($"サイコロの出目は {final} です！");
+        
+        // ステートマシン経由 or 直接移動
+        bool accepted = gsm ? gsm.OnDiceFinal(final) : false;
         if (!accepted) { rolling = false; yield break; }
 
-        // 駒の移動終了を待つ（token は必須で保持しておく）
-        while (token != null && token.isMoving) yield return null;
+        while (gsm.CurrentPlayer != null && gsm.CurrentPlayer.isMoving) yield return null;
 
         rolling = false;
         if (rollButton) rollButton.interactable = true;

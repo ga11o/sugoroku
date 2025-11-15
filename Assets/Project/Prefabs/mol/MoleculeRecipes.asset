@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a01ade538c773cb4581628634b6e1e8d, type: 3}
+  m_Name: MoleculeRecipes
+  m_EditorClassIdentifier: 
+  recipes:
+  - product: {fileID: 11400000, guid: 0e23f299d51373a418b0396dd0d222b3, type: 2}
+    productDisplayJP: H + H - O
+    requires:
+    - atom: {fileID: 11400000, guid: b965dd12282263942b9c048b91d7b100, type: 2}
+      count: 1
+    - atom: {fileID: 11400000, guid: b965dd12282263942b9c048b91d7b100, type: 2}
+      count: 1
+    - atom: {fileID: 11400000, guid: a54d1ab59d083b44fab3874df81165f4, type: 2}
+      count: 1
+  - product: {fileID: 11400000, guid: b1ff3a0cc1ec38a4686fdcf668eac5e8, type: 2}
+    productDisplayJP: C + O + O
+    requires:
+    - atom: {fileID: 11400000, guid: 1469ad5a23b12ad4993b1e6ef7037353, type: 2}
+      count: 1
+    - atom: {fileID: 11400000, guid: a54d1ab59d083b44fab3874df81165f4, type: 2}
+      count: 1
+    - atom: {fileID: 11400000, guid: a54d1ab59d083b44fab3874df81165f4, type: 2}
+      count: 1
+  - product: {fileID: 11400000, guid: 0fda93306ba66c349a55b74ed191c59e, type: 2}
+    productDisplayJP: O + O
+    requires:
+    - atom: {fileID: 11400000, guid: a54d1ab59d083b44fab3874df81165f4, type: 2}
+      count: 1
+    - atom: {fileID: 11400000, guid: a54d1ab59d083b44fab3874df81165f4, type: 2}
+      count: 1
+  - product: {fileID: 11400000, guid: eb51a3e72e5fb8f4591c62bc888b8cd6, type: 2}
+    productDisplayJP: H + H
+    requires:
+    - atom: {fileID: 11400000, guid: b965dd12282263942b9c048b91d7b100, type: 2}
+      count: 1
+    - atom: {fileID: 11400000, guid: b965dd12282263942b9c048b91d7b100, type: 2}
+      count: 1
