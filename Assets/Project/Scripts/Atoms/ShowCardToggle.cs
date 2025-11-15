@@ -15,8 +15,8 @@ namespace Sugoroku.Atoms
         public TMP_Text buttonText;         // ボタンラベル
 
         [Header("文言")]
-        public string openText  = "Show Cards";
-        public string closeText = "Hide Cards";
+        public string openText  = "手札表示";
+        public string closeText = "手札非表示";
 
         bool visible = false; // 起動時は非表示
 

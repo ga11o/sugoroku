@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e5f718b87e3b2c04ca54b7036c79e1f9, type: 3}
+  m_Name: Q3
+  m_EditorClassIdentifier: 
+  question: "\u5730\u7403\u306E\u7A7A\u6C17\u4E2D\u3067\u4E00\u756A\u591A\u3044\u6C17\u4F53\u306F\uFF1F"
+  choices:
+  - "\u7A92\u7D20"
+  - "\u9178\u7D20"
+  - "\u4E8C\u9178\u5316\u70AD\u7D20"
+  - "\u6C34\u7D20"
+  correctIndex: 0
+  rewardCard: {fileID: 11400000, guid: 279ebde5b75e7dc4da62041bdb135f69, type: 2}

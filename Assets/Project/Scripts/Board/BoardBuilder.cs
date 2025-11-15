@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using Sugoroku.Quiz;
 
 public class BoardBuilder : MonoBehaviour
 {
@@ -130,6 +131,7 @@ public class BoardBuilder : MonoBehaviour
                     case 12: ev = new TileEvent(TileEvent.EventType.SkipNext); break;
                     case 13: ev = new TileEvent(TileEvent.EventType.ExtraTurn); break;
                     case 14: ev = new TileEvent(TileEvent.EventType.GoToStart); break;
+                    case 15: ev = new TileEvent(TileEvent.EventType.Quiz); break; // クイズマス
                 }
 
                 // Waypoint を必ず作成
