@@ -154,7 +154,7 @@ namespace Sugoroku.Atoms
                 selectedLabel.text = "選択なし";
         }
 
-        private void ClearSelection()
+        public void ClearSelection()
         {
             _selected = null;
             ApplySelectionVisuals();

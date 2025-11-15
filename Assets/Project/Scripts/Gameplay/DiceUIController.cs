@@ -10,7 +10,6 @@ public class DiceUIController : MonoBehaviour
 {
     [Header("参照")]
     public Button rollButton;     // サイコロボタン
-    public TMP_Text diceText;     // 出目表示
     public AudioSource sfxRoll;   // 任意（サイコロ音）
 
     [Header("アニメ設定")]
@@ -19,7 +18,10 @@ public class DiceUIController : MonoBehaviour
 
     [Header("サイコロ見た目")]
     public Image diceImage;      // サイコロの絵を出す Image
+    private Image diceImage2;    // 出目の余剰分
     public Sprite[] diceFaces;   // 1〜6 のサイコロ画像（要素数 6）
+
+    private Vector3 originalDicePos;
 
     bool rolling;
 
@@ -37,7 +39,8 @@ public class DiceUIController : MonoBehaviour
         if (rollButton != null)
             rollButton.onClick.AddListener(OnClickRoll);
 
-        if (diceText != null) diceText.text = "—";
+        if (diceImage != null)
+            originalDicePos = diceImage.rectTransform.localPosition;
     }
 
     void Update()
@@ -59,22 +62,38 @@ public class DiceUIController : MonoBehaviour
 // ★ 数字と画像をまとめて更新する共通メソッド
     void UpdateDiceVisual(int value)
     {
-        // テキスト
-        if (diceText != null)
-        {
-            diceText.text = value.ToString();
-        }
-
         // 画像（1〜6の範囲だけ）
         if (diceImage != null && diceFaces != null &&
             value >= 1 && value <= diceFaces.Length)
         {
             diceImage.sprite = diceFaces[value - 1];
         }
+        else if (diceImage != null && diceFaces != null && value > 6 && value < 13)
+        {
+            diceImage.sprite = diceFaces[5];
+            diceImage.rectTransform.localPosition += new Vector3(-35f, 0f, 0f);
+
+            GameObject go = Instantiate(diceImage.gameObject, diceImage.transform.parent);
+            diceImage2 = go.GetComponent<Image>();
+            diceImage2.sprite = diceFaces[value - 7];
+            diceImage2.rectTransform.localPosition += new Vector3(35f, 0f, 0f);
+        }
     }
+
+    public void ClearExtraDice()
+    {
+        if (diceImage2 != null)
+        {
+            Destroy(diceImage2.gameObject);
+            diceImage2 = null;
+            diceImage.rectTransform.localPosition = originalDicePos;
+        }
+    }
+    
     IEnumerator RollRoutine()
     {
         rolling = true;
+        ClearExtraDice();
         if (rollButton) rollButton.interactable = false;
         if (sfxRoll) sfxRoll.Play();
 
