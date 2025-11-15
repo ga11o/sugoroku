@@ -16,7 +16,6 @@ public class GameStateMachine : MonoBehaviour
     }
 
 
-
     [Header("参照")]
     public List<TokenMover> players = new List<TokenMover>(); // プレイヤーの駒リスト
     private int playerCount = 4; // プレイヤー数
@@ -207,7 +206,7 @@ public class GameStateMachine : MonoBehaviour
                 yield return CurrentPlayer.GoToStart();
                 break;
             case TileEvent.EventType.Quiz:
-                // ミニゲーム（クイズ）を表示。
+                /*// ミニゲーム（クイズ）を表示。
                 quizManager.ShowQuizUI();
                 // プレイヤーの入力を待つ（無制限で待つ）。必要ならタイムアウトを秒数で指定できます。
                 yield return StartCoroutine(quizManager.WaitForAnswerRoutine());
@@ -223,7 +222,7 @@ public class GameStateMachine : MonoBehaviour
                 else if (quizManager.WrongAnswer)
                 {
                     Debug.Log("Quiz Wrong Answer!");
-                }
+                }*/
                 break;
         }
     }
