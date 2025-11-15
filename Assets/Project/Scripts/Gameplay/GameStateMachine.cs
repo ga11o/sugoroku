@@ -89,12 +89,21 @@ public class GameStateMachine : MonoBehaviour
         SetState(GameState.Turn_AwaitInput);
     }
 
-    void SetState(GameState newState)
+     void SetState(GameState next)
     {
-        if (State == newState) return;
-        var old = State;
-        State = newState;
-        OnStateChanged?.Invoke(old, newState);
+        if (State == next) return;
+        var prev = State;
+        State = next;
+        OnStateChanged?.Invoke(prev, next);
+        // 必要ならここで UI の有効/無効を切り替える
+        if (State == GameState.Turn_AwaitInput)
+        {
+            // カメラを現在のプレイヤーに追従させる
+            if (cameraFollow != null && CurrentPlayer != null)
+            {
+                cameraFollow.target = CurrentPlayer.transform;
+            }
+        }
     }
 
     // DiceUI から呼ぶ：最終出目が決まったらここへ
