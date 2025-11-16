@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   recipes:
   - product: {fileID: 11400000, guid: 0e23f299d51373a418b0396dd0d222b3, type: 2}
-    productDisplayJP: H + H - O
+    productDisplayJP: H + H + O
     requires:
     - atom: {fileID: 11400000, guid: b965dd12282263942b9c048b91d7b100, type: 2}
       count: 1
@@ -44,4 +44,11 @@ MonoBehaviour:
     - atom: {fileID: 11400000, guid: b965dd12282263942b9c048b91d7b100, type: 2}
       count: 1
     - atom: {fileID: 11400000, guid: b965dd12282263942b9c048b91d7b100, type: 2}
+      count: 1
+  - product: {fileID: 11400000, guid: eb51a3e72e5fb8f4591c62bc888b8cd6, type: 2}
+    productDisplayJP: H + H
+    requires:
+    - atom: {fileID: 11400000, guid: b965dd12282263942b9c048b91d7b100, type: 2}
+      count: 1
+    - atom: {fileID: 11400000, guid: a54d1ab59d083b44fab3874df81165f4, type: 2}
       count: 1
