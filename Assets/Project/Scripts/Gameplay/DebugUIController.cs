@@ -19,7 +19,6 @@ public class DebugUIController : MonoBehaviour
     public TMP_Text turnText;              // 現在ターン数
     public TMP_Text nameText;              // 現在プレイヤー名
     public TMP_Text indexText;             // 現在マス
-    public TMP_Text diceMirrorText;        // ダイスの表示をミラー
 
     void Awake()
     {
@@ -53,11 +52,6 @@ public class DebugUIController : MonoBehaviour
     {
         // ラベル更新（存在チェックを十分に）
         if (gsm && stateText)   stateText.text   = $"State: {gsm.State}";
-        if (dice && diceMirrorText)
-        {
-            var t = dice.diceText ? dice.diceText.text : "-";
-            diceMirrorText.text = $"Dice: {t}";
-        }
 
         // 駒移動中は±ボタンを無効に
         if (stepPlusBtn)  stepPlusBtn.interactable  = !(gsm.CurrentPlayer && gsm.CurrentPlayer.isMoving);

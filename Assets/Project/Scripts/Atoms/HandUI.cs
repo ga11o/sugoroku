@@ -25,7 +25,7 @@ namespace Sugoroku.Atoms
 
         // 内部
         private readonly List<AtomCardView> _pool = new();
-        private readonly HashSet<AtomCardView> _selected = new();
+        private HashSet<AtomCardView> _selected = new();
 
         void Awake()
         {
@@ -109,6 +109,13 @@ namespace Sugoroku.Atoms
             foreach (var v in _selected)
                 if (v && v.Data) list.Add(v.Data);
             return list;
+        }
+
+        public void ClearSelection()
+        {
+            _selected.Clear();
+            UpdateSynthesizeInteractable();
+            UpdateHint();
         }
 
         // ---- 合成UI状態 ----

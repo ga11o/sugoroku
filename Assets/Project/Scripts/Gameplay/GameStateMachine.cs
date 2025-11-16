@@ -168,6 +168,8 @@ public class GameStateMachine : MonoBehaviour
         HandUI.playerHand = CurrentPlayer.atomHand; // 次のプレイヤーの手札をセット
         HandUI.moleculeHand = CurrentPlayer.molHand; // 次のプレイヤーの分子手札をセット
         MolHandUI.moleculeHand = CurrentPlayer.molHand; // 次のプレイヤーの分子手札をセット
+        HandUI.ClearSelection();
+        MolHandUI.ClearSelection();
         MessageManager.Important($"{CurrentPlayer.playerName} のターンです！");
         HandUI.Refresh();
         MolHandUI.Refresh();
